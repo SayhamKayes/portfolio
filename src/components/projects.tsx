@@ -2,11 +2,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Github } from "lucide-react";
 import { FadeUp } from "./motion-primitives";
-import p1 from "@/assets/projects_preview/projects_preview_1.png";
-import p2 from "@/assets/projects_preview/projects_preview_2.png";
-import p3 from "@/assets/projects_preview/projects_preview_3.png";
-import p4 from "@/assets/projects_preview/projects_preview_4.png";
-import p5 from "@/assets/projects_preview/projects_preview_5.png";
+import p1 from "@/assets/projects_preview/projects_preview_1.jpg";
+import p2 from "@/assets/projects_preview/projects_preview_2.jpg";
+import p3 from "@/assets/projects_preview/projects_preview_3.jpg";
+import p4 from "@/assets/projects_preview/projects_preview_4.jpg";
+import p5 from "@/assets/projects_preview/projects_preview_5.jpg";
 
 type Cat = "All" | "Full Stack" | "AI / ML" | "Mobile" | "SaaS";
 

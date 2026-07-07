@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown, Github, Linkedin, Mail, Code2, Database, Brain, Cpu } from "lucide-react";
-import highlightedAsset from "@/assets/highlighted.png";
+import highlightedAsset from "@/assets/highlighted.jpg";
 import { MagneticButton } from "./motion-primitives";
 import { Particles } from "./effects";
 

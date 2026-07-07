@@ -1,6 +1,6 @@
 import { GraduationCap, Code2, Brain, Server } from "lucide-react";
 import { FadeUp, Counter, Stagger, StaggerItem } from "./motion-primitives";
-import aboutPhoto from "@/assets/profile-photo.png";
+import aboutPhoto from "@/assets/profile-photo.jpg";
 
 const journey = [
   {
