@@ -26,4 +26,7 @@ export default defineConfig({
     // Prevents version mismatch issues across packages
     dedupe: ["react", "react-dom", "@tanstack/react-router"],
   },
+  ssr: {
+    external: ["@prisma/client"],
+  },
 });
