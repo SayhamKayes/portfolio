@@ -1,6 +1,5 @@
 import { N as NullProtoObj } from "./rou3.mjs";
 import { F as FastURL, N as NodeResponse } from "./srvx.mjs";
-import { s as serialize, p as parseSetCookie, a as parse } from "./cookie-es.mjs";
 function decodePathname(pathname) {
   return decodeURI(pathname.includes("%25") ? pathname.replace(/%25/g, "%2525") : pathname);
 }
@@ -8,7 +7,7 @@ const kEventNS = "h3.internal.event.";
 const kEventRes = /* @__PURE__ */ Symbol.for(`${kEventNS}res`);
 const kEventResHeaders = /* @__PURE__ */ Symbol.for(`${kEventNS}res.headers`);
 const kEventResErrHeaders = /* @__PURE__ */ Symbol.for(`${kEventNS}res.err.headers`);
-var H3Event$1 = class H3Event {
+var H3Event = class {
   app;
   req;
   url;
@@ -61,11 +60,11 @@ var H3EventResponse = class {
     return this[kEventResErrHeaders] ||= new Headers();
   }
 };
-const DISALLOWED_STATUS_CHARS$1 = /[^\u0009\u0020-\u007E]/g;
-function sanitizeStatusMessage$1(statusMessage = "") {
-  return statusMessage.replace(DISALLOWED_STATUS_CHARS$1, "");
+const DISALLOWED_STATUS_CHARS = /[^\u0009\u0020-\u007E]/g;
+function sanitizeStatusMessage(statusMessage = "") {
+  return statusMessage.replace(DISALLOWED_STATUS_CHARS, "");
 }
-function sanitizeStatusCode$1(statusCode, defaultStatusCode = 200) {
+function sanitizeStatusCode(statusCode, defaultStatusCode = 200) {
   if (!statusCode) return defaultStatusCode;
   if (typeof statusCode === "string") statusCode = +statusCode;
   if (statusCode < 100 || statusCode > 599) return defaultStatusCode;
@@ -99,8 +98,8 @@ var HTTPError = class HTTPError2 extends Error {
       messageInput = arg1;
       details = arg2;
     } else details = arg1;
-    const status = sanitizeStatusCode$1(details?.status || details?.statusCode || details?.cause?.status || details?.cause?.statusCode, 500);
-    const statusText = sanitizeStatusMessage$1(details?.statusText || details?.statusMessage || details?.cause?.statusText || details?.cause?.statusMessage);
+    const status = sanitizeStatusCode(details?.status || details?.statusCode || details?.cause?.status || details?.cause?.statusCode, 500);
+    const statusText = sanitizeStatusMessage(details?.statusText || details?.statusMessage || details?.cause?.statusText || details?.cause?.statusMessage);
     const message = messageInput || details?.message || details?.cause?.message || details?.statusText || details?.statusMessage || [
       "HTTPError",
       status,
@@ -324,7 +323,7 @@ function handlerWithFetch(handler) {
   return Object.assign(handler, { fetch: (req) => {
     if (typeof req === "string") req = new URL(req, "http://_");
     if (req instanceof URL) req = new Request(req);
-    const event = new H3Event$1(req);
+    const event = new H3Event(req);
     try {
       return Promise.resolve(toResponse(handler(event), event));
     } catch (error) {
@@ -376,7 +375,7 @@ var H3Core = class {
     return middleware.length > 0 ? callMiddleware(event, middleware, routeHandler) : routeHandler(event);
   }
   "~request"(request, context) {
-    const event = new H3Event$1(request, context, this);
+    const event = new H3Event(request, context, this);
     let handlerRes;
     try {
       if (this.config.onRequest) {
@@ -399,275 +398,9 @@ var H3Core = class {
     return routeMiddleware ? [...globalMiddleware, ...routeMiddleware] : globalMiddleware;
   }
 };
-function hasProp(obj, prop) {
-  try {
-    return prop in obj;
-  } catch {
-    return false;
-  }
-}
-const DISALLOWED_STATUS_CHARS = /[^\u0009\u0020-\u007E]/g;
-function sanitizeStatusMessage(statusMessage = "") {
-  return statusMessage.replace(DISALLOWED_STATUS_CHARS, "");
-}
-function sanitizeStatusCode(statusCode, defaultStatusCode = 200) {
-  if (!statusCode) {
-    return defaultStatusCode;
-  }
-  if (typeof statusCode === "string") {
-    statusCode = Number.parseInt(statusCode, 10);
-  }
-  if (statusCode < 100 || statusCode > 999) {
-    return defaultStatusCode;
-  }
-  return statusCode;
-}
-function getDistinctCookieKey(name, opts) {
-  return [name, opts.domain || "", opts.path || "/"].join(";");
-}
-function parseCookies(event) {
-  return parse(event.node.req.headers.cookie || "");
-}
-function getCookie(event, name) {
-  return parseCookies(event)[name];
-}
-function setCookie(event, name, value, serializeOptions = {}) {
-  if (!serializeOptions.path) {
-    serializeOptions = { path: "/", ...serializeOptions };
-  }
-  const newCookie = serialize(name, value, serializeOptions);
-  const currentCookies = splitCookiesString(
-    event.node.res.getHeader("set-cookie")
-  );
-  if (currentCookies.length === 0) {
-    event.node.res.setHeader("set-cookie", newCookie);
-    return;
-  }
-  const newCookieKey = getDistinctCookieKey(name, serializeOptions);
-  event.node.res.removeHeader("set-cookie");
-  for (const cookie of currentCookies) {
-    const parsed = parseSetCookie(cookie);
-    const key = getDistinctCookieKey(parsed.name, parsed);
-    if (key === newCookieKey) {
-      continue;
-    }
-    event.node.res.appendHeader("set-cookie", cookie);
-  }
-  event.node.res.appendHeader("set-cookie", newCookie);
-}
-function deleteCookie(event, name, serializeOptions) {
-  setCookie(event, name, "", {
-    ...serializeOptions,
-    maxAge: 0
-  });
-}
-function splitCookiesString(cookiesString) {
-  if (Array.isArray(cookiesString)) {
-    return cookiesString.flatMap((c) => splitCookiesString(c));
-  }
-  if (typeof cookiesString !== "string") {
-    return [];
-  }
-  const cookiesStrings = [];
-  let pos = 0;
-  let start;
-  let ch;
-  let lastComma;
-  let nextStart;
-  let cookiesSeparatorFound;
-  const skipWhitespace = () => {
-    while (pos < cookiesString.length && /\s/.test(cookiesString.charAt(pos))) {
-      pos += 1;
-    }
-    return pos < cookiesString.length;
-  };
-  const notSpecialChar = () => {
-    ch = cookiesString.charAt(pos);
-    return ch !== "=" && ch !== ";" && ch !== ",";
-  };
-  while (pos < cookiesString.length) {
-    start = pos;
-    cookiesSeparatorFound = false;
-    while (skipWhitespace()) {
-      ch = cookiesString.charAt(pos);
-      if (ch === ",") {
-        lastComma = pos;
-        pos += 1;
-        skipWhitespace();
-        nextStart = pos;
-        while (pos < cookiesString.length && notSpecialChar()) {
-          pos += 1;
-        }
-        if (pos < cookiesString.length && cookiesString.charAt(pos) === "=") {
-          cookiesSeparatorFound = true;
-          pos = nextStart;
-          cookiesStrings.push(cookiesString.slice(start, lastComma));
-          start = pos;
-        } else {
-          pos = lastComma + 1;
-        }
-      } else {
-        pos += 1;
-      }
-    }
-    if (!cookiesSeparatorFound || pos >= cookiesString.length) {
-      cookiesStrings.push(cookiesString.slice(start));
-    }
-  }
-  return cookiesStrings;
-}
-typeof setImmediate === "undefined" ? (fn) => fn() : setImmediate;
-function sendStream(event, stream) {
-  if (!stream || typeof stream !== "object") {
-    throw new Error("[h3] Invalid stream provided.");
-  }
-  event.node.res._data = stream;
-  if (!event.node.res.socket) {
-    event._handled = true;
-    return Promise.resolve();
-  }
-  if (hasProp(stream, "pipeTo") && typeof stream.pipeTo === "function") {
-    return stream.pipeTo(
-      new WritableStream({
-        write(chunk) {
-          event.node.res.write(chunk);
-        }
-      })
-    ).then(() => {
-      event.node.res.end();
-    });
-  }
-  if (hasProp(stream, "pipe") && typeof stream.pipe === "function") {
-    return new Promise((resolve, reject) => {
-      stream.pipe(event.node.res);
-      if (stream.on) {
-        stream.on("end", () => {
-          event.node.res.end();
-          resolve();
-        });
-        stream.on("error", (error) => {
-          reject(error);
-        });
-      }
-      event.node.res.on("close", () => {
-        if (stream.abort) {
-          stream.abort();
-        }
-      });
-    });
-  }
-  throw new Error("[h3] Invalid or incompatible stream provided.");
-}
-function sendWebResponse(event, response) {
-  for (const [key, value] of response.headers) {
-    if (key === "set-cookie") {
-      event.node.res.appendHeader(key, splitCookiesString(value));
-    } else {
-      event.node.res.setHeader(key, value);
-    }
-  }
-  if (response.status) {
-    event.node.res.statusCode = sanitizeStatusCode(
-      response.status,
-      event.node.res.statusCode
-    );
-  }
-  if (response.statusText) {
-    event.node.res.statusMessage = sanitizeStatusMessage(response.statusText);
-  }
-  if (response.redirected) {
-    event.node.res.setHeader("location", response.url);
-  }
-  if (!response.body) {
-    event.node.res.end();
-    return;
-  }
-  return sendStream(event, response.body);
-}
-class H3Event2 {
-  "__is_event__" = true;
-  // Context
-  node;
-  // Node
-  web;
-  // Web
-  context = {};
-  // Shared
-  // Request
-  _method;
-  _path;
-  _headers;
-  _requestBody;
-  // Response
-  _handled = false;
-  // Hooks
-  _onBeforeResponseCalled;
-  _onAfterResponseCalled;
-  constructor(req, res) {
-    this.node = { req, res };
-  }
-  // --- Request ---
-  get method() {
-    if (!this._method) {
-      this._method = (this.node.req.method || "GET").toUpperCase();
-    }
-    return this._method;
-  }
-  get path() {
-    return this._path || this.node.req.url || "/";
-  }
-  get headers() {
-    if (!this._headers) {
-      this._headers = _normalizeNodeHeaders(this.node.req.headers);
-    }
-    return this._headers;
-  }
-  // --- Respoonse ---
-  get handled() {
-    return this._handled || this.node.res.writableEnded || this.node.res.headersSent;
-  }
-  respondWith(response) {
-    return Promise.resolve(response).then(
-      (_response) => sendWebResponse(this, _response)
-    );
-  }
-  // --- Utils ---
-  toString() {
-    return `[${this.method}] ${this.path}`;
-  }
-  toJSON() {
-    return this.toString();
-  }
-  // --- Deprecated ---
-  /** @deprecated Please use `event.node.req` instead. */
-  get req() {
-    return this.node.req;
-  }
-  /** @deprecated Please use `event.node.res` instead. */
-  get res() {
-    return this.node.res;
-  }
-}
-function _normalizeNodeHeaders(nodeHeaders) {
-  const headers = new Headers();
-  for (const [name, value] of Object.entries(nodeHeaders)) {
-    if (Array.isArray(value)) {
-      for (const item of value) {
-        headers.append(name, item);
-      }
-    } else if (value) {
-      headers.set(name, value);
-    }
-  }
-  return headers;
-}
 export {
-  H3Event2 as H,
-  defineLazyEventHandler as a,
-  HTTPError as b,
-  H3Core as c,
-  deleteCookie as d,
-  getCookie as g,
-  setCookie as s,
+  HTTPError as H,
+  H3Core as a,
+  defineLazyEventHandler as d,
   toRequest as t
 };

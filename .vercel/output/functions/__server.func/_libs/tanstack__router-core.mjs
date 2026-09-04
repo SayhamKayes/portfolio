@@ -1,5 +1,5 @@
 import { p as parseHref } from "./tanstack__history.mjs";
-import { b as splitSetCookieString } from "./cookie-es.mjs";
+import { s as splitSetCookieString } from "./cookie-es.mjs";
 import { a as ai, r as re, S as Sn, d as dn } from "./seroval.mjs";
 import { p } from "./seroval-plugins.mjs";
 import { ReadableStream as ReadableStream$1 } from "node:stream/web";
