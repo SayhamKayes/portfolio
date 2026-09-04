@@ -6,32 +6,21 @@ import { FadeUp } from "./motion-primitives";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-const dominatedCountries = [
-  "United States of America",
-  "Canada",
-  "United Kingdom",
-  "Portugal",
-  "France",
-  "Spain",
-  "Belgium",
-  "Netherlands",
-  "Germany",
-  "Switzerland",
-  "Czech Republic",
-  "Poland",
-  "Serbia",
-  "South Africa",
-  "South Korea",
-  "Australia",
-  "Bangladesh",
-];
-
 // Coordinates for Dhaka, Bangladesh [Longitude, Latitude]
 const homeBaseCoordinates: [number, number] = [90.4125, 23.8103];
 
-const WorldMap = () => {
+interface WorldMapProps {
+  settings?: { key: string; value: string }[];
+  globalClients?: { id: string; country: string }[];
+}
+
+const WorldMap = ({ settings, globalClients = [] }: WorldMapProps) => {
+  const dominatedCountries = globalClients.map(c => c.country);
+  
   // Calculates percentage based on 195 global countries
   const dominationPercentage = Math.round((dominatedCountries.length / 195) * 100);
+
+  const contactLocation = settings?.find((s: any) => s.key === 'contactLocation')?.value || "Dhaka, Bangladesh";
 
   return (
     <motion.div
@@ -86,7 +75,7 @@ const WorldMap = () => {
                 className="cursor-pointer"
                 transform="translate(-16, -31)"
                 data-tooltip-id="country-tooltip"
-                data-tooltip-content="Dhaka, Bangladesh (Home Base)"
+                data-tooltip-content={`${contactLocation} (Home Base)`}
               >
                 <path
                   className="fill-destructive drop-shadow-md animate-pulse"

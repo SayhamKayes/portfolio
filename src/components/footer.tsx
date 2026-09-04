@@ -1,7 +1,17 @@
 import { Facebook, Github, Instagram, Linkedin, Mail } from "lucide-react";
 import logoAsset from "@/assets/logo.png";
 
-export function Footer() {
+interface FooterProps {
+  settings?: { key: string; value: string }[];
+}
+
+export function Footer({ settings }: FooterProps) {
+  const getSetting = (key: string) => settings?.find((s: any) => s.key === key)?.value;
+  
+  const contactEmail = getSetting('contactEmail') || "sayhamkayes@gmail.com";
+  const contactLinkedin = getSetting('contactLinkedin') || "https://www.linkedin.com/in/sayhamkayes/";
+  const contactGithub = getSetting('contactGithub') || "https://github.com/SayhamKayes";
+  
   return (
     <footer className="relative">
       <div className="h-px w-full animated-gradient" />
@@ -43,20 +53,15 @@ export function Footer() {
             {/* Added 'justify-center md:justify-start' to center the icons container on mobile */}
             <div className="mt-4 flex gap-3 justify-center md:justify-start">
               {[
-                { Icon: Mail, href: "mailto:sayhamkayes@gmail.com", label: "Email" },
+                { Icon: Mail, href: contactEmail.includes('@') && !contactEmail.startsWith('mailto:') ? `mailto:${contactEmail}` : contactEmail, label: "Email" },
                 {
-                  Icon: Facebook,
-                  href: "https://www.facebook.com/sayhamkayes/",
-                  label: "Facebook",
-                },
-                {
-                  Icon: Instagram,
-                  href: "https://www.instagram.com/sayhamkayes/",
-                  label: "Instagram",
+                  Icon: Github,
+                  href: contactGithub,
+                  label: "GitHub",
                 },
                 {
                   Icon: Linkedin,
-                  href: "https://www.linkedin.com/in/sayhamkayes/",
+                  href: contactLinkedin,
                   label: "LinkedIn",
                 },
               ].map(({ Icon, href, label }) => (
@@ -65,7 +70,7 @@ export function Footer() {
                   href={href}
                   target={href.startsWith("http") ? "_blank" : undefined}
                   rel="noreferrer"
-                  className="grid h-10 w-10 place-items-center rounded-full glass text-muted-foreground transition-all hover:text-cyan hover:shadow-[0_0_20px_oklch(0.82_0.13_170/0.4)]"
+                  className="grid h-10 w-10 place-items-center rounded-full glass text-muted-foreground transition-all hover:text-cyan hover:shadow-[0_0_20px_var(--glow-color)]"
                   aria-label={label}
                 >
                   <Icon className="h-4 w-4" />

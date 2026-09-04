@@ -83,14 +83,17 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-sans);
+    font-family: var(--font-global, var(--font-sans));
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, h4 {
-    font-family: var(--font-display);
-    letter-spacing: -0.02em;
-  }
+  h1 { color: var(--h1-color, inherit); font-family: var(--font-h1, var(--font-display)); letter-spacing: -0.02em; }
+  h2 { color: var(--h2-color, inherit); font-family: var(--font-h2, var(--font-display)); letter-spacing: -0.02em; }
+  h3 { color: var(--h3-color, inherit); font-family: var(--font-h3, var(--font-display)); letter-spacing: -0.02em; }
+  h4 { color: var(--h4-color, inherit); font-family: var(--font-h4, var(--font-display)); letter-spacing: -0.02em; }
+  h5 { color: var(--h5-color, inherit); font-family: var(--font-h5, var(--font-display)); letter-spacing: -0.02em; }
+  h6 { color: var(--h6-color, inherit); font-family: var(--font-h6, var(--font-display)); letter-spacing: -0.02em; }
+  p { color: var(--p-color, inherit); font-family: var(--font-p, inherit); }
 }
 
 @utility text-gradient {

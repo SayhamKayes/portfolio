@@ -44,8 +44,18 @@ function useTypewriter(words: string[], typeSpeed = 75, deleteSpeed = 40, pause 
   return text;
 }
 
-export function Hero() {
-  const typed = useTypewriter(roles);
+export function Hero({ settings }: { settings?: any[] }) {
+  const getVal = (key: string) => settings?.find((s) => s.key === key && s.value)?.value;
+
+  const heroName = getVal('heroName') || "Sayham";
+  
+  const designationStr = getVal('heroDesignation') || "Full Stack Developer, Front End Developer, AI & ML Enthusiast";
+  const dynamicRoles = designationStr.split(',').map((r: string) => r.trim()).filter(Boolean);
+  const typed = useTypewriter(dynamicRoles.length > 0 ? dynamicRoles : roles);
+
+  const heroDesc = getVal('heroDescription') || "Full Stack Developer with 3+ years of freelance and remote experience and a strong foundation in Python (Django) and React.js. I've delivered 80+ web projects to 20+ international clients, earning the Level 2 Seller badge with a 4.9/5 satisfaction rating on Fiverr.";
+  
+  const heroImgUrl = getVal('heroImage') || highlightedAsset;
 
   return (
     <section
@@ -77,7 +87,7 @@ export function Hero() {
             className="text-5xl font-bold leading-[1.05] sm:text-6xl lg:text-7xl xl:text-8xl"
           >
             Hi, I'm <br />
-            <span className="text-gradient">Sayham</span>
+            <span className="text-gradient">{heroName}</span>
           </motion.h1>
 
           <motion.div
@@ -96,10 +106,7 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.45 }}
             className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground"
           >
-            Full Stack Developer with 3+ years of freelance and remote experience and a strong
-            foundation in Python (Django) and React.js. I've delivered 80+ web projects to 20+
-            international clients, earning the Level 2 Seller badge with a 4.9/5 satisfaction rating
-            on Fiverr.
+            {heroDesc}
           </motion.p>
 
           <motion.div
@@ -115,7 +122,6 @@ export function Hero() {
             ))}
           </motion.div>
 
-          {/* 1. FIXED BUTTON CONTAINER: Forced side-by-side on mobile, scaled width appropriately */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -165,7 +171,6 @@ export function Hero() {
         </div>
 
         {/* Right Image Side */}
-        {/* 2. FIXED IMAGE WRAPPER: Changed max-w-md to responsive scale max-w-[260px] on mobile */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -181,12 +186,12 @@ export function Hero() {
 
           {/* Profile image container */}
           <div className="relative h-full w-full">
-            <div className="absolute inset-0 rounded-full p-[3px] animated-gradient shadow-[0_0_22px_rgba(34,211,238,0.45)]" />
+            <div className="absolute inset-0 rounded-full p-[3px] animated-gradient shadow-[0_0_22px_var(--glow-color-strong)]" />
 
             <div className="relative h-full w-full overflow-hidden rounded-full">
               <img
-                src={highlightedAsset}
-                alt="Sayham Kayes — Full Stack Developer"
+                src={heroImgUrl}
+                alt={`${heroName} — ${dynamicRoles[0] || 'Developer'}`}
                 width={1024}
                 height={1024}
                 className="h-full w-full object-cover border-2 border-transparent rounded-full"
@@ -202,7 +207,7 @@ export function Hero() {
               style={pos}
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 4, delay, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute grid h-10 w-10 place-items-center rounded-2xl glass-strong text-cyan shadow-[0_0_20px_oklch(0.74_0.15_162/0.25)] sm:h-14 sm:w-14"
+              className="absolute z-10 grid h-10 w-10 place-items-center rounded-2xl glass-strong text-cyan shadow-[0_0_20px_var(--glow-color)] sm:h-14 sm:w-14"
             >
               <Icon className="h-4 w-4 sm:h-6 sm:w-6" />
             </motion.div>

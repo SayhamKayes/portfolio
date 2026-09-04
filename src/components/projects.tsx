@@ -8,51 +8,25 @@ import p3 from "@/assets/projects_preview/projects_preview_3.jpg";
 import p4 from "@/assets/projects_preview/projects_preview_4.jpg";
 import p5 from "@/assets/projects_preview/projects_preview_5.jpg";
 
-type Cat = "All" | "Full Stack" | "AI / ML" | "Mobile" | "SaaS";
+type Cat = string;
 
-const projects = [
-  {
-    title: "Expensee — Offline Expense Tracker App",
-    desc: "A privacy-first, mobile expense tracker featuring a modern glassmorphism UI, intelligent voice input, and interactive charts.",
-    tags: ["React", "TypeScript", "Tailwind CSS", "Capacitor (Android SDK)", "Bun"],
-    cat: ["Mobile", "Full Stack"] as Cat[],
-    img: p1,
-  },
-  {
-    title: "SignCrafter — Email Signature Generator",
-    desc: "An automated SaaS platform for generating sleek, responsive email signatures that work seamlessly across all major email clients.",
-    tags: ["React (Vite)", "Vanilla CSS", "Zustand", "Capacitor (Android SDK)", "Cloudinary"],
-    cat: ["SaaS", "Full Stack"] as Cat[],
-    img: p2,
-  },
-  {
-    title: "AI-Powered Fish Detection App",
-    desc: "Automated fish identification for local farmers using CNN with TensorFlow — high accuracy detection in varied aquatic conditions.",
-    tags: ["Python", "Streamlit", "TensorFlow", "CNN"],
-    cat: ["AI / ML"] as Cat[],
-    img: p3,
-  },
-  {
-    title: "CodeWriters — Blog Website",
-    desc: "Dynamic blog with secure user authentication, post CRUD and commenting. RESTful API backend with Django and responsive React frontend.",
-    tags: ["Django", "React.js", "SQLite", "REST API"],
-    cat: ["Full Stack"] as Cat[],
-    img: p4,
-  },
-  {
-    title: "TaskCrafter — Utility Application",
-    desc: "A modern, comprehensive web utility application designed to streamline productivity and manage daily tasks efficiently.",
-    tags: ["TypeScript", "React.js", "Tailwind CSS", "Vite", "shadcn/ui"],
-    cat: ["Full Stack", "SaaS"] as Cat[],
-    img: p5,
-  },
-];
 
-const filters: Cat[] = ["All", "Full Stack", "AI / ML", "Mobile", "SaaS"];
 
-export function Projects() {
+export function Projects({ items = [] }: { items?: any[] }) {
+  const dbItems = items.map((p, i) => ({
+    title: p.title,
+    desc: p.description,
+    tags: p.technologies ? p.technologies.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
+    cat: p.category ? p.category.split(',').map((c: string) => c.trim() as Cat) : ["SaaS" as Cat],
+    img: p.imageUrl || [p1, p2, p3, p4, p5][i % 5],
+    link: p.link,
+    githubLink: p.githubLink
+  }));
+
+  const dynamicFilters = ["All" as Cat, ...Array.from(new Set(dbItems.flatMap(p => p.cat)))];
+
   const [active, setActive] = useState<Cat>("All");
-  const filtered = active === "All" ? projects : projects.filter((p) => p.cat.includes(active));
+  const filtered = active === "All" ? dbItems : dbItems.filter((p) => p.cat.includes(active));
 
   return (
     <section id="projects" className="relative py-32">
@@ -67,7 +41,7 @@ export function Projects() {
           </FadeUp>
           <FadeUp delay={0.15}>
             <div className="flex flex-wrap gap-2 rounded-full glass p-1.5">
-              {filters.map((f) => (
+              {dynamicFilters.map((f) => (
                 <button
                   key={f}
                   onClick={() => setActive(f)}
@@ -110,29 +84,35 @@ export function Projects() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
                   <div className="absolute right-4 top-4 flex gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    <a
-                      href="#"
-                      className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background"
-                      aria-label="Live demo"
-                    >
-                      <ArrowUpRight className="h-4 w-4" />
-                    </a>
-                    <a
-                      href="https://github.com/SayhamKayes"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background"
-                      aria-label="GitHub"
-                    >
-                      <Github className="h-4 w-4" />
-                    </a>
+                    {p.link && (
+                      <a
+                        href={p.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background"
+                        aria-label="Live demo"
+                      >
+                        <ArrowUpRight className="h-4 w-4" />
+                      </a>
+                    )}
+                    {p.githubLink && (
+                      <a
+                        href={p.githubLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background"
+                        aria-label="GitHub"
+                      >
+                        <Github className="h-4 w-4" />
+                      </a>
+                    )}
                   </div>
                 </div>
                 <div className="p-7">
                   <h3 className="text-2xl font-semibold tracking-tight">{p.title}</h3>
                   <p className="mt-3 text-sm text-muted-foreground">{p.desc}</p>
                   <div className="mt-5 flex flex-wrap gap-2">
-                    {p.tags.map((t) => (
+                    {p.tags.map((t: string) => (
                       <span
                         key={t}
                         className="rounded-full border border-white/10 px-3 py-1 text-xs text-muted-foreground"

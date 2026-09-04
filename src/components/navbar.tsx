@@ -42,8 +42,9 @@ export function Navbar() {
             "flex w-full items-center justify-between rounded-full px-4 py-2.5 sm:px-6 sm:py-3 transition-all duration-500", // 3. Lowered mobile padding here too
             scrolled ? "glass-strong shadow-[0_8px_40px_rgba(0,0,0,0.4)]" : "",
           )}
+          style={{ backgroundColor: 'var(--header-bg)' }}
         >
-          <a href="#home" className="flex items-center gap-2 text-base font-semibold">
+          <a href="#home" className="flex items-center gap-2 text-base font-semibold" style={{ color: 'var(--header-font, inherit)' }}>
             <img src={logoAsset} alt="SK logo" className="h-9 w-9 object-contain sm:h-10 sm:w-10" />
           </a>
 
@@ -53,6 +54,7 @@ export function Navbar() {
                 key={l.href}
                 href={l.href}
                 className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                style={{ color: 'var(--header-font)' }}
               >
                 {l.label}
               </a>
@@ -61,7 +63,7 @@ export function Navbar() {
 
           <a
             href="#contact"
-            className="hidden rounded-full bg-gradient-to-r from-cyan to-electric px-5 py-2 text-sm font-medium text-background transition-shadow hover:shadow-[0_0_30px_oklch(0.82_0.13_170/0.55)] lg:inline-block"
+            className="hidden rounded-full bg-gradient-to-r from-cyan to-electric px-5 py-2 text-sm font-medium text-background transition-shadow hover:shadow-[0_0_30px_var(--glow-color-strong)] lg:inline-block"
           >
             Hire Me
           </a>

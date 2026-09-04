@@ -1,4 +1,4 @@
-import { e, r as reactExports } from "./react.mjs";
+import { R as React, r as reactExports } from "./react.mjs";
 import { P as PropTypes } from "./prop-types.mjs";
 import { f as feature } from "./topojson-client.mjs";
 import { g as geoPath, a as geoConicEquidistant, b as geoConicEqualArea, c as geoConicConformal, d as geoOrthographic, e as geoAzimuthalEquidistant, f as geoAzimuthalEqualArea, h as geoAlbersUsa, i as geoAlbers, j as geoTransverseMercator, k as geoMercator, l as geoEqualEarth, m as graticule } from "./d3-geo.mjs";
@@ -101,7 +101,7 @@ var MapProvider = function MapProvider2(_ref2) {
       path: geoPath().projection(proj)
     };
   }, [width, height, projection, c[0], c[1], r[0], r[1], r[2], p[0], p[1], s]);
-  return e.createElement(MapContext.Provider, _extends({ value }, restProps));
+  return React.createElement(MapContext.Provider, _extends({ value }, restProps));
 };
 MapProvider.propTypes = {
   width: PropTypes.number,
@@ -111,7 +111,7 @@ MapProvider.propTypes = {
 };
 var ComposableMap = function ComposableMap2(_ref) {
   var _ref$width = _ref.width, width = _ref$width === void 0 ? 800 : _ref$width, _ref$height = _ref.height, height = _ref$height === void 0 ? 600 : _ref$height, _ref$projection = _ref.projection, projection = _ref$projection === void 0 ? "geoEqualEarth" : _ref$projection, _ref$projectionConfig = _ref.projectionConfig, projectionConfig = _ref$projectionConfig === void 0 ? {} : _ref$projectionConfig, _ref$className = _ref.className, className = _ref$className === void 0 ? "" : _ref$className, restProps = objectWithoutProperties(_ref, ["width", "height", "projection", "projectionConfig", "className"]);
-  return e.createElement(
+  return React.createElement(
     MapProvider,
     {
       width,
@@ -119,7 +119,7 @@ var ComposableMap = function ComposableMap2(_ref) {
       projection,
       projectionConfig
     },
-    e.createElement("svg", _extends({
+    React.createElement("svg", _extends({
       viewBox: "0 0 " + width + " " + height,
       className: "rsm-svg " + className
     }, restProps))
@@ -181,7 +181,7 @@ var Geographies = function Geographies2(_ref) {
   var geography = _ref.geography, children = _ref.children, parseGeographies = _ref.parseGeographies, _ref$className = _ref.className, className = _ref$className === void 0 ? "" : _ref$className, restProps = objectWithoutProperties(_ref, ["geography", "children", "parseGeographies", "className"]);
   var _useContext = reactExports.useContext(MapContext), path = _useContext.path, projection = _useContext.projection;
   var _useGeographies = useGeographies({ geography, parseGeographies }), geographies = _useGeographies.geographies;
-  return e.createElement(
+  return React.createElement(
     "g",
     _extends({ className: "rsm-geographies " + className }, restProps),
     geographies && geographies.length > 0 && children({ geographies, path, projection })
@@ -223,7 +223,7 @@ var Geography = function Geography2(_ref) {
     setPressed(false);
     if (onMouseUp) onMouseUp(evt);
   }
-  return e.createElement("path", _extends({
+  return React.createElement("path", _extends({
     role: "geography",
     tabIndex: "0",
     className: "rsm-geography " + className,
@@ -252,7 +252,7 @@ var Geography$1 = reactExports.memo(Geography);
 var Graticule = function Graticule2(_ref) {
   var _ref$fill = _ref.fill, fill = _ref$fill === void 0 ? "transparent" : _ref$fill, _ref$stroke = _ref.stroke, stroke = _ref$stroke === void 0 ? "currentcolor" : _ref$stroke, _ref$step = _ref.step, step = _ref$step === void 0 ? [10, 10] : _ref$step, _ref$className = _ref.className, className = _ref$className === void 0 ? "" : _ref$className, restProps = objectWithoutProperties(_ref, ["fill", "stroke", "step", "className"]);
   var _useContext = reactExports.useContext(MapContext), path = _useContext.path;
-  return e.createElement("path", _extends({
+  return React.createElement("path", _extends({
     d: path(graticule().step(step)()),
     fill,
     stroke,
@@ -288,19 +288,19 @@ var Sphere = function Sphere2(_ref) {
   var spherePath = reactExports.useMemo(function() {
     return path({ type: "Sphere" });
   }, [path]);
-  return e.createElement(
+  return React.createElement(
     reactExports.Fragment,
     null,
-    e.createElement(
+    React.createElement(
       "defs",
       null,
-      e.createElement(
+      React.createElement(
         "clipPath",
         { id },
-        e.createElement("path", { d: spherePath })
+        React.createElement("path", { d: spherePath })
       )
     ),
-    e.createElement("path", _extends({
+    React.createElement("path", _extends({
       d: spherePath,
       fill,
       stroke,
@@ -350,7 +350,7 @@ var Marker = function Marker2(_ref) {
     setPressed(false);
     if (onMouseUp) onMouseUp(evt);
   }
-  return e.createElement(
+  return React.createElement(
     "g",
     _extends({
       transform: "translate(" + x + ", " + y + ")",

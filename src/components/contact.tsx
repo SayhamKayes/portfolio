@@ -41,7 +41,7 @@ const info = [
   },
 ];
 
-export function Contact() {
+export function Contact({ settings }: { settings?: any[] }) {
   const formRef = useRef<HTMLFormElement>(null); // 1. Created Form Reference
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
@@ -106,7 +106,7 @@ export function Contact() {
                       rel="noreferrer"
                       className="group flex items-center gap-4 rounded-2xl border border-transparent p-3 transition-all hover:border-white/10 hover:bg-white/5"
                     >
-                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl glass text-cyan transition-all group-hover:shadow-[0_0_20px_oklch(0.82_0.13_170/0.4)]">
+                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl glass text-cyan transition-all group-hover:shadow-[0_0_20px_var(--glow-color)]">
                         <c.Icon className="h-4 w-4" />
                       </div>
                       <div>
@@ -150,7 +150,7 @@ export function Contact() {
                   name="message"
                   rows={5}
                   placeholder="Tell me about what you're building..."
-                  className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-cyan/50 focus:bg-white/[0.05] focus:shadow-[0_0_20px_oklch(0.82_0.13_170/0.2)]"
+                  className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-cyan/50 focus:bg-white/[0.05] focus:shadow-[0_0_20px_var(--glow-color)]"
                 />
               </div>
 
@@ -216,7 +216,7 @@ function Field({
         type={type}
         placeholder={placeholder}
         required
-        className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-cyan/50 focus:bg-white/[0.05] focus:shadow-[0_0_20px_oklch(0.82_0.13_170/0.2)]"
+        className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-cyan/50 focus:bg-white/[0.05] focus:shadow-[0_0_20px_var(--glow-color)]"
       />
     </div>
   );

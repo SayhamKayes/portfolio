@@ -123,7 +123,7 @@ export function MagneticButton({
     "relative inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium transition-all duration-300";
   const styles =
     variant === "primary"
-      ? "bg-white text-background hover:shadow-[0_0_40px_oklch(0.85_0.16_200/0.5)]"
+      ? "bg-white text-background hover:shadow-[0_0_40px_var(--glow-color-strong)]"
       : "glass text-foreground hover:bg-white/10 border border-white/15";
 
   const inner = (

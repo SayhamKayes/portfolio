@@ -1,5 +1,5 @@
 import { p as parseHref } from "./tanstack__history.mjs";
-import { s as splitSetCookieString } from "./cookie-es.mjs";
+import { b as splitSetCookieString } from "./cookie-es.mjs";
 import { a as ai, r as re, S as Sn, d as dn } from "./seroval.mjs";
 import { p } from "./seroval-plugins.mjs";
 import { ReadableStream as ReadableStream$1 } from "node:stream/web";
@@ -1201,6 +1201,9 @@ function isRedirect(obj) {
 }
 function isResolvedRedirect(obj) {
   return isRedirect(obj) && !!obj.options.href;
+}
+function parseRedirect(obj) {
+  if (obj !== null && typeof obj === "object" && obj.isSerializedRedirect) return redirect(obj);
 }
 const triggerOnReady = (inner) => {
   if (!inner.rendered) {
@@ -4696,7 +4699,9 @@ export {
   makeSerovalPlugin as N,
   getStylesheetHref as O,
   isSsrResponse as P,
+  parseRedirect as Q,
   RouterCore as R,
+  redirect as S,
   isDangerousProtocol as a,
   BaseRoute as b,
   isModuleNotFoundError as c,

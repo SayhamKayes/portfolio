@@ -3,17 +3,6 @@ import { FadeUp } from "./motion-primitives";
 
 const workItems = [
   {
-    Icon: Briefcase,
-    period: "Jan 2026 — Present",
-    title: "Web Developer",
-    org: "Dynamite IT Solution",
-    location: "Remote · Dhaka, Bangladesh",
-    bullets: [
-      "Administered web server environments using WHM / cPanel with routine backups.",
-      "Resolved critical front-end bugs and optimized WordPress load times by 15%.",
-    ],
-  },
-  {
     Icon: Code,
     period: "Feb 2021 — Present",
     title: "Front End Developer",
@@ -23,6 +12,17 @@ const workItems = [
       "Achieved Level 2 Seller status (top 20%) with 4.9/5.0 rating across 80+ projects.",
       "Delivered 50+ developed custom email signatures and 15+ WordPress landing pages.",
       "Managed international clients across 15+ countries (USA, Canada, EU).",
+    ],
+  },
+  {
+    Icon: Briefcase,
+    period: "Jan 2026 — Present",
+    title: "Web Developer",
+    org: "Dynamite IT Solution",
+    location: "Remote · Dhaka, Bangladesh",
+    bullets: [
+      "Administered web server environments using WHM / cPanel with routine backups.",
+      "Resolved critical front-end bugs and optimized WordPress load times by 15%.",
     ],
   },
 ];
@@ -58,17 +58,16 @@ function Timeline({ items }: { items: typeof workItems }) {
           return (
             <FadeUp key={it.title} delay={i * 0.1}>
               <div
-                className={`relative flex items-start gap-6 md:gap-0 ${
-                  left ? "md:flex-row" : "md:flex-row-reverse"
-                }`}
+                className={`relative flex items-start gap-6 md:gap-0 ${left ? "md:flex-row" : "md:flex-row-reverse"
+                  }`}
               >
                 <div className="absolute left-8 top-6 z-10 grid h-4 w-4 -translate-x-1/2 place-items-center rounded-full bg-background md:left-1/2">
-                  <div className="h-3 w-3 rounded-full animated-gradient shadow-[0_0_20px_oklch(0.74_0.15_162/0.8)]" />
+                  <div className="h-3 w-3 rounded-full animated-gradient shadow-[0_0_20px_var(--glow-color-strong)]" />
                 </div>
 
                 <div className={`md:w-1/2 ${left ? "md:pr-12 md:text-right" : "md:pl-12"}`} />
                 <div className={`ml-16 flex-1 md:ml-0 md:w-1/2 ${left ? "md:pl-12" : "md:pr-12"}`}>
-                  <div className="group rounded-2xl glass p-6 transition-all hover:bg-white/5 hover:shadow-[0_10px_40px_-10px_oklch(0.74_0.15_162/0.4)]">
+                  <div className="group rounded-2xl glass p-6 transition-all hover:bg-white/5 hover:shadow-[0_10px_40px_-10px_var(--glow-color)]">
                     <div className="mb-3 flex items-center gap-3">
                       <div className="grid h-10 w-10 place-items-center rounded-xl animated-gradient text-background">
                         <it.Icon className="h-4 w-4" />
@@ -99,7 +98,25 @@ function Timeline({ items }: { items: typeof workItems }) {
   );
 }
 
-export function Experience() {
+export function Experience({ items = [], educations = [] }: { items?: any[], educations?: any[] }) {
+  const dynamicWorkItems = items.length > 0 ? items.map((it: any) => ({
+    Icon: Briefcase,
+    period: it.duration,
+    title: it.title,
+    org: it.company,
+    location: "", // Add if DB has it later
+    bullets: it.description ? it.description.split('\n').map((s: string) => s.trim()).filter(Boolean) : []
+  })) : workItems;
+
+  const dynamicEducationItems = educations.length > 0 ? educations.map((ed: any) => ({
+    Icon: GraduationCap,
+    period: ed.duration,
+    title: ed.degree,
+    org: ed.institution,
+    location: "", // Add if DB has it later
+    bullets: ed.description ? ed.description.split('\n').map((s: string) => s.trim()).filter(Boolean) : []
+  })) : educationItems;
+
   return (
     <section id="experience" className="relative py-32">
       <div className="relative mx-auto max-w-7xl px-6">
@@ -116,7 +133,7 @@ export function Experience() {
               Work <span className="text-gradient">Experience</span>
             </h3>
           </FadeUp>
-          <Timeline items={workItems} />
+          <Timeline items={dynamicWorkItems} />
         </div>
 
         <div className="mt-20">
@@ -125,7 +142,7 @@ export function Experience() {
               Educational <span className="text-gradient">Qualifications</span>
             </h3>
           </FadeUp>
-          <Timeline items={educationItems} />
+          <Timeline items={dynamicEducationItems} />
         </div>
       </div>
     </section>

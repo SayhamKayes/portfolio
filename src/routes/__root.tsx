@@ -13,6 +13,14 @@ import appCss from "../styles.css?url";
 import iconUrl from "../assets/icon.png?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
+declare global {
+  interface Window {
+    CozeWebSDK?: {
+      WebChatClient: new (config: unknown) => unknown;
+    };
+  }
+}
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -169,6 +177,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <body>
         {children}
         <BackToTopButton />
+        {/* <CozeChatWidget /> */}
         <Scripts />
       </body>
     </html>
@@ -184,4 +193,41 @@ function RootComponent() {
       <Outlet />
     </QueryClientProvider>
   );
+}
+
+function CozeChatWidget() {
+  useEffect(() => {
+    const script1 = document.createElement("script");
+    script1.src =
+      "https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.6/libs/oversea/index.js";
+    script1.async = true;
+
+    script1.onload = () => {
+      if (window.CozeWebSDK) {
+        new window.CozeWebSDK.WebChatClient({
+          config: {
+            bot_id: "7666435318342107141",
+          },
+          componentProps: {
+            title: "Sayham's Assistant",
+          },
+          auth: {
+            type: "token",
+            token: import.meta.env.VITE_COZE_TOKEN,
+            onRefreshToken: function () {
+              return import.meta.env.VITE_COZE_TOKEN;
+            },
+          },
+        });
+      }
+    };
+
+    document.body.appendChild(script1);
+
+    return () => {
+      document.body.removeChild(script1);
+    };
+  }, []);
+
+  return null;
 }

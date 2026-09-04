@@ -25,14 +25,41 @@ const journey = [
   },
 ];
 
-const stats = [
-  { value: 3, suffix: "+", label: "Years Experience" },
-  { value: 15, suffix: "+", label: "Countries Served" },
-  { value: 80, suffix: "+", label: "Projects Delivered" },
-  { value: 20, suffix: "+", label: "Happy Clients" },
-];
+export function About({ settings, globalClients }: { settings?: any[], globalClients?: any[] }) {
+  const getVal = (key: string) => settings?.find((s) => s.key === key && s.value)?.value;
 
-export function About() {
+  const aboutImgUrl = getVal('aboutProfilePic') || aboutPhoto;
+  const aboutDescription = getVal('aboutDescription') || "I'm a Full Stack Developer based in Dhaka, Bangladesh, with 3+ years of freelance and remote experience and a strong foundation in Python (Django) and React.js. I've delivered 80+ web projects to 20+ international clients on Fiverr.\n\nAs a Level 2 Seller on Fiverr (top 20%), I've maintained a 4.9/5.0 satisfaction rating across 75+ completed projects, serving clients from the USA, Canada, and across the EU.\n\nCurrently pursuing my BSc in Computer Science & Engineering at Daffodil International University while working as a Web Developer at Dynamite IT Solution.";
+
+  const stats = [
+    { value: Number(getVal('aboutExpYears')) || 3, suffix: "+", label: "Years Experience" },
+    { value: Number(getVal('aboutCountries')) || 15, suffix: "+", label: "Countries Served" },
+    { value: Number(getVal('aboutProjects')) || 80, suffix: "+", label: "Projects Delivered" },
+    { value: Number(getVal('aboutClients')) || 20, suffix: "+", label: "Happy Clients" },
+  ];
+
+  const dynamicJourney = [
+    {
+      Icon: Code2,
+      title: getVal('aboutCard1Title') || "Full Stack Development",
+      desc: getVal('aboutCard1Desc') || "End-to-end web products with React.js and Django - premium UI meets resilient APIs.",
+    },
+    {
+      Icon: Server,
+      title: getVal('aboutCard2Title') || "Python Engineering",
+      desc: getVal('aboutCard2Desc') || "Clean, efficient Python - from automation scripts to scalable backend services.",
+    },
+    {
+      Icon: Brain,
+      title: getVal('aboutCard3Title') || "AI / ML Exploration",
+      desc: getVal('aboutCard3Desc') || "Training models with TensorFlow, PyTorch and Scikit-Learn for real-world problems.",
+    },
+    {
+      Icon: GraduationCap,
+      title: getVal('aboutCard4Title') || "Computer Science Student",
+      desc: getVal('aboutCard4Desc') || "Pursuing BSc in CSE at Daffodil International University - currently fourth year.",
+    },
+  ];
   return (
     <section id="about" className="relative py-32">
       <div className="absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-electric/10 blur-[120px]" />
@@ -50,9 +77,9 @@ export function About() {
             <div className="relative aspect-[4/5] overflow-hidden rounded-3xl glow-border">
               <div className="absolute inset-0 bg-gradient-to-br from-electric/30 via-transparent to-purple-glow/30" />
               <div className="absolute inset-0 grid-bg opacity-30" />
-              <div className="absolute inset-0 p-[1px] animated-gradient shadow-[0_0_22px_rgba(34,211,238,0.45)]">
+              <div className="absolute inset-0 p-[1px] animated-gradient shadow-[0_0_22px_var(--glow-color-strong)]">
                 <img
-                  src={aboutPhoto}
+                  src={aboutImgUrl}
                   alt="Sayham Kayes — Full Stack Developer"
                   width={1024}
                   height={1024}
@@ -73,26 +100,15 @@ export function About() {
 
           <div className="lg:col-span-7">
             <FadeUp>
-              <p className="text-lg leading-relaxed text-muted-foreground">
-                I'm a Full Stack Developer based in Dhaka, Bangladesh, with{" "}
-                <span className="text-foreground">3+ years</span> of freelance and remote experience
-                and a strong foundation in Python (Django) and React.js. I've delivered 80+ web
-                projects to 20+ international clients on Fiverr.
-              </p>
-              <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
-                As a <span className="text-foreground">Level 2 Seller on Fiverr</span> (top 20%),
-                I've maintained a 4.9/5.0 satisfaction rating across 75+ completed projects, serving
-                clients from the USA, Canada, and across the EU.
-              </p>
-              <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
-                Currently pursuing my BSc in Computer Science & Engineering at{" "}
-                <span className="text-foreground">Daffodil International University</span> while
-                working as a Web Developer at Dynamite IT Solution.
-              </p>
+              {aboutDescription.split('\n\n').map((paragraph: string, i: number) => (
+                <p key={i} className={`text-lg leading-relaxed text-muted-foreground ${i > 0 ? 'mt-5' : ''}`}>
+                  {paragraph}
+                </p>
+              ))}
             </FadeUp>
 
             <Stagger className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2">
-              {journey.map((j) => (
+              {dynamicJourney.map((j) => (
                 <StaggerItem key={j.title}>
                   <div className="group flex gap-5 rounded-2xl glass p-5 transition-all hover:bg-white/5">
                     <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl animated-gradient text-background">

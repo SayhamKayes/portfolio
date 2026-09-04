@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Quote } from "lucide-react";
+import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { FadeUp } from "./motion-primitives";
 
 // Desktop Asset Imports
@@ -63,7 +63,7 @@ const testimonials = [
   { desktopImage: Review17, mobileImage: ReviewMobile17 },
 ];
 
-export function Testimonials() {
+export function Testimonials({ items }: { items?: any[] }) {
   const [i, setI] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -78,13 +78,26 @@ export function Testimonials() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const combinedTestimonials: any[] = [
+    ...testimonials,
+    ...(items || []).map((item) => ({
+      desktopImage: item.screenshotUrl,
+      mobileImage: item.screenshotUrl,
+      isManual: !item.screenshotUrl,
+      name: item.name,
+      designation: item.designation,
+      content: item.content,
+      avatarUrl: item.avatarUrl,
+    })),
+  ];
+
   // Autoplay loop hook
   useEffect(() => {
-    const id = setInterval(() => setI((v) => (v + 1) % testimonials.length), 6000);
+    const id = setInterval(() => setI((v) => (v + 1) % combinedTestimonials.length), 6000);
     return () => clearInterval(id);
-  }, []);
+  }, [combinedTestimonials.length]);
 
-  const t = testimonials[i];
+  const t = combinedTestimonials[i] || combinedTestimonials[0];
 
   return (
     <section id="testimonials" className="relative py-32">
@@ -109,29 +122,44 @@ export function Testimonials() {
                 transition={{ duration: 0.5 }}
               >
                 <div className="mt-6 flex justify-center">
-                  {/* 4. DYNAMIC SOURCE SWITCHING */}
-                  <img
-                    src={isMobile ? t.mobileImage : t.desktopImage}
-                    alt={`Review ${i + 1}`}
-                    className="h-auto w-full rounded-xl object-contain max-w-4xl mx-auto"
-                  />
+                  {t.isManual ? (
+                    <div className="flex flex-col items-center text-center max-w-2xl mx-auto py-8">
+                      {t.avatarUrl && (
+                        <img src={t.avatarUrl} alt={t.name} className="w-20 h-20 rounded-full mb-4 object-cover border-2 border-white/10" />
+                      )}
+                      <p className="text-xl md:text-2xl font-medium mb-6 leading-relaxed text-white/90">"{t.content}"</p>
+                      <div>
+                        <h4 className="font-semibold text-lg text-white">{t.name}</h4>
+                        <p className="text-cyan text-sm">{t.designation}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={isMobile && t.mobileImage ? t.mobileImage : t.desktopImage}
+                      alt={`Review ${i + 1}`}
+                      className="h-auto w-full rounded-xl object-contain max-w-4xl mx-auto"
+                    />
+                  )}
                 </div>
               </motion.div>
             </AnimatePresence>
           </div>
 
-          {/* Change 'flex' to 'hidden sm:flex' (or 'hidden md:flex') */}
-          <div className="mt-8 hidden sm:flex justify-center gap-2">
-            {testimonials.map((_, k) => (
-              <button
-                key={k}
-                onClick={() => setI(k)}
-                aria-label={`Show testimonial ${k + 1}`}
-                className={`h-1.5 rounded-full transition-all ${
-                  k === i ? "w-10 bg-white" : "w-5 bg-white/20 hover:bg-white/40"
-                }`}
-              />
-            ))}
+          <div className="mt-8 flex justify-center gap-4">
+            <button
+              onClick={() => setI((v) => (v - 1 + combinedTestimonials.length) % combinedTestimonials.length)}
+              className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-white/70 hover:text-white"
+              aria-label="Previous testimonial"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => setI((v) => (v + 1) % combinedTestimonials.length)}
+              className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-white/70 hover:text-white"
+              aria-label="Next testimonial"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
           </div>
         </FadeUp>
       </div>
