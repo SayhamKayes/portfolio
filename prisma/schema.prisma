@@ -83,6 +83,7 @@ model Message {
   subject   String?
   message   String
   isRead    Boolean  @default(false)
+  isReplied Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
