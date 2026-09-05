@@ -168,6 +168,9 @@ function BackToTopButton() {
   );
 }
 
+import { NavigationLoader, InitialPreloader } from "../components/Preloader";
+import { CustomPopupProvider } from "../components/CustomPopup";
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
@@ -175,6 +178,9 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <InitialPreloader />
+        <NavigationLoader />
+        <CustomPopupProvider />
         {children}
         <BackToTopButton />
         {/* <CozeChatWidget /> */}
