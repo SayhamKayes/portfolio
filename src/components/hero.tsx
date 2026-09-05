@@ -57,6 +57,11 @@ export function Hero({ settings }: { settings?: any[] }) {
   
   const heroImgUrl = getVal('heroImage') || highlightedAsset;
 
+  const contactGithub = getVal('contactGithub') || "https://github.com/SayhamKayes";
+  const contactLinkedin = getVal('contactLinkedin') || "https://www.linkedin.com/in/sayhamkayes/";
+  const contactEmail = getVal('contactEmail') || "sayhamkayes@gmail.com";
+  const emailHref = contactEmail.includes('@') && !contactEmail.startsWith('mailto:') ? `mailto:${contactEmail}` : contactEmail;
+
   return (
     <section
       id="home"
@@ -143,7 +148,7 @@ export function Hero({ settings }: { settings?: any[] }) {
             className="mt-10 flex items-center gap-5 text-muted-foreground"
           >
             <a
-              href="https://github.com/SayhamKayes"
+              href={contactGithub}
               target="_blank"
               rel="noreferrer"
               className="transition-colors hover:text-cyan"
@@ -152,7 +157,7 @@ export function Hero({ settings }: { settings?: any[] }) {
               <Github className="h-5 w-5" />
             </a>
             <a
-              href="https://www.linkedin.com/in/sayhamkayes/"
+              href={contactLinkedin}
               target="_blank"
               rel="noreferrer"
               className="transition-colors hover:text-cyan"
@@ -161,7 +166,7 @@ export function Hero({ settings }: { settings?: any[] }) {
               <Linkedin className="h-5 w-5" />
             </a>
             <a
-              href="mailto:sayhamkayes@gmail.com"
+              href={emailHref}
               className="transition-colors hover:text-cyan"
               aria-label="Email"
             >

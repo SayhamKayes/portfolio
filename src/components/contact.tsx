@@ -3,48 +3,56 @@ import { Mail, Phone, Linkedin, Github, MapPin, Send, Check, Loader2 } from "luc
 import { FadeUp, MagneticButton } from "./motion-primitives";
 import emailjs from "@emailjs/browser";
 
-const info = [
-  {
-    Icon: Mail,
-    label: "Email",
-    value: "sayhamkayes@gmail.com",
-    href: "mailto:sayhamkayes@gmail.com",
-    target: "_blank",
-  },
-  {
-    Icon: Phone,
-    label: "Phone",
-    value: "(+880) 193 957 4147",
-    href: "tel:+8801939574147",
-    target: "_blank",
-  },
-  {
-    Icon: Linkedin,
-    label: "LinkedIn",
-    value: "/in/sayhamkayes",
-    href: "https://www.linkedin.com/in/sayhamkayes/",
-    target: "_blank",
-  },
-  {
-    Icon: Github,
-    label: "GitHub",
-    value: "@SayhamKayes",
-    href: "https://github.com/SayhamKayes",
-    target: "_blank",
-  },
-  {
-    Icon: MapPin,
-    label: "Location",
-    value: "Dhaka, Bangladesh",
-    href: "https://maps.app.goo.gl/baGXiKXHwPZuFd6g6",
-    target: "_blank",
-  },
-];
+// Hardcoded info removed. Dynamic mapping implemented inside Contact component.
 
 export function Contact({ settings }: { settings?: any[] }) {
   const formRef = useRef<HTMLFormElement>(null); // 1. Created Form Reference
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
+
+  const getSetting = (key: string) => settings?.find((s) => s.key === key)?.value;
+
+  const dynamicInfo = [
+    {
+      Icon: Mail,
+      label: "Email",
+      value: getSetting("contactEmailDisplay") || "sayhamkayes@gmail.com",
+      href: getSetting("contactEmail")
+        ? getSetting("contactEmail").startsWith("mailto:")
+          ? getSetting("contactEmail")
+          : `mailto:${getSetting("contactEmail")}`
+        : "mailto:sayhamkayes@gmail.com",
+      target: "_blank",
+    },
+    {
+      Icon: Phone,
+      label: "Phone",
+      value: getSetting("contactPhoneDisplay") || "(+880) 193 957 4147",
+      href: getSetting("contactPhone") || "tel:+8801939574147",
+      target: "_blank",
+    },
+    {
+      Icon: Linkedin,
+      label: "LinkedIn",
+      value: getSetting("contactLinkedinDisplay") || "/in/sayhamkayes",
+      href: getSetting("contactLinkedin") || "https://www.linkedin.com/in/sayhamkayes/",
+      target: "_blank",
+    },
+    {
+      Icon: Github,
+      label: "GitHub",
+      value: getSetting("contactGithubDisplay") || "@SayhamKayes",
+      href: getSetting("contactGithub") || "https://github.com/SayhamKayes",
+      target: "_blank",
+    },
+    {
+      Icon: MapPin,
+      label: "Location",
+      value: getSetting("contactLocation") || "Dhaka, Bangladesh",
+      href: getSetting("contactLocationUrl") || "https://maps.app.goo.gl/baGXiKXHwPZuFd6g6",
+      target: "_blank",
+    },
+  ];
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -98,7 +106,7 @@ export function Contact({ settings }: { settings?: any[] }) {
                 Prefer email or DMs? Use the channels below.
               </p>
               <ul className="mt-3 space-y-1">
-                {info.map((c) => (
+                {dynamicInfo.map((c) => (
                   <li key={c.label}>
                     <a
                       href={c.href}
