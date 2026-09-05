@@ -78,7 +78,11 @@ function InboxPage() {
                 }`}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <h3 className="truncate pr-2">{msg.name}</h3>
+                  <h3 className="truncate pr-2 flex items-center gap-2">
+                    {msg.name}
+                    {/* Add isReplied type assertion as the client might not have strict typing until restart */}
+                    {(msg as any).isReplied && <span title="Replied"><Check size={14} className="text-emerald-500" /></span>}
+                  </h3>
                   <span className="text-xs text-gray-500 whitespace-nowrap">
                     {new Date(msg.createdAt).toLocaleDateString()}
                   </span>
@@ -120,7 +124,7 @@ function InboxPage() {
                 
                 <div className="mt-8">
                   <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                    <Reply size={18} /> Reply
+                    <Reply size={18} /> {(selectedMsg as any).isReplied ? 'Send Another Reply' : 'Reply'}
                   </h3>
                   <form onSubmit={handleReply} className="space-y-4">
                     <textarea 
@@ -132,7 +136,7 @@ function InboxPage() {
                     />
                     <div className="flex justify-between items-center">
                       <p className="text-xs text-gray-500">
-                        * Sending emails currently simulates a console log.
+                        Reply will be sent via Resend.
                       </p>
                       <button 
                         type="submit"
