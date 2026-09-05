@@ -1,7 +1,8 @@
 import { useState, type FormEvent, useRef } from "react";
 import { Mail, Phone, Linkedin, Github, MapPin, Send, Check, Loader2 } from "lucide-react";
 import { FadeUp, MagneticButton } from "./motion-primitives";
-import emailjs from "@emailjs/browser";
+import { submitMessage } from "../server/admin";
+import { showPopup } from "./CustomPopup";
 
 // Hardcoded info removed. Dynamic mapping implemented inside Contact component.
 
@@ -28,7 +29,11 @@ export function Contact({ settings }: { settings?: any[] }) {
       Icon: Phone,
       label: "Phone",
       value: getSetting("contactPhoneDisplay") || "(+880) 193 957 4147",
-      href: getSetting("contactPhone") || "tel:+8801939574147",
+      href: getSetting("contactPhone")
+        ? getSetting("contactPhone").startsWith("tel:")
+          ? getSetting("contactPhone")
+          : `tel:${getSetting("contactPhone")}`
+        : "tel:+8801939574147",
       target: "_blank",
     },
     {
@@ -61,20 +66,23 @@ export function Contact({ settings }: { settings?: any[] }) {
     setIsSubmitting(true);
 
     try {
-      await emailjs.sendForm(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        e.currentTarget,
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
-      );
+      const formData = new FormData(e.currentTarget);
+      const name = formData.get("name") as string;
+      const email = formData.get("email") as string;
+      const subject = formData.get("subject") as string;
+      const message = formData.get("message") as string;
 
-      setSent(true);
-      e.currentTarget.reset();
-      setTimeout(() => setSent(false), 4000);
+      const result = await submitMessage({ data: { name, email, subject, message } });
+      
+      if (!result?.success) throw new Error("Failed to submit message");
+
+      showPopup("Message sent successfully!", "success");
+      formRef.current?.reset();
     } catch (error) {
       console.error("Failed to route contact message:", error);
-      alert(
+      showPopup(
         "Something went wrong while delivering your message. Please reach out directly via email!",
+        "error"
       );
     } finally {
       setIsSubmitting(false);
@@ -167,7 +175,6 @@ export function Contact({ settings }: { settings?: any[] }) {
                   I'll reply within 24 hours.
                 </p>
 
-                {/* 👈 3. Reconfigured to manually trigger submit on click handler */}
                 <MagneticButton
                   className={`w-full sm:w-auto ${isSubmitting ? "opacity-60 cursor-not-allowed" : ""}`}
                   onClick={() => {
@@ -179,10 +186,6 @@ export function Contact({ settings }: { settings?: any[] }) {
                   {isSubmitting ? (
                     <div className="flex w-full items-center justify-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin" /> Sending...
-                    </div>
-                  ) : sent ? (
-                    <div className="flex w-full items-center justify-center gap-2 text-emerald-400">
-                      <Check className="h-4 w-4" /> Sent Successfully
                     </div>
                   ) : (
                     <div className="flex w-full items-center justify-center gap-2">
