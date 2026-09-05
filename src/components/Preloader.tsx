@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 export function NavigationLoader() {
   const isLoading = useRouterState({ select: (s) => s.status === "pending" });
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ export function NavigationLoader() {
     };
   }, [isLoading]);
 
+  if (!pathname.startsWith('/admin')) return null;
   if (progress === 0 && !isLoading) return null;
 
   return (
