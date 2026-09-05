@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { confirmAction } from '../../components/CustomPopup';
 import { Plus, Edit2, Trash2, X, RefreshCw, Trash, Upload } from 'lucide-react';
 import { getSkills, getDeletedSkills, deleteSkill, restoreSkill, permanentlyDeleteSkill, addSkill, editSkill } from '../../server/admin';
 import React, { useState } from 'react';
@@ -38,7 +39,7 @@ function SkillsPage() {
   });
 
   const handleDelete = async (id: string) => {
-    if (confirm('Move to Recycle Bin?')) {
+    if (await confirmAction('Move to Recycle Bin?')) {
       await deleteSkill({ data: { id } });
       router.invalidate();
     }
@@ -50,7 +51,7 @@ function SkillsPage() {
   };
 
   const handlePermanentDelete = async (id: string) => {
-    if (confirm('Permanently delete this skill?')) {
+    if (await confirmAction('Permanently delete this skill?')) {
       await permanentlyDeleteSkill({ data: { id } });
       router.invalidate();
     }

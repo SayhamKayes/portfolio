@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { showPopup, confirmAction } from '../../components/CustomPopup';
 import { Plus, Edit2, Trash2, X, RefreshCw, Trash, Upload } from 'lucide-react';
 import { getPortfolioItems, getDeletedPortfolioItems, deletePortfolioItem, restorePortfolioItem, permanentlyDeletePortfolioItem, addPortfolioItem, editPortfolioItem } from '../../server/admin';
 import { uploadImage } from '../../server/upload';
@@ -45,7 +46,7 @@ function PortfolioPage() {
   });
 
   const handleDelete = async (id: string) => {
-    if (confirm('Move to Recycle Bin?')) {
+    if (await confirmAction('Move to Recycle Bin?')) {
       await deletePortfolioItem({ data: { id } });
       router.invalidate();
     }
@@ -57,7 +58,7 @@ function PortfolioPage() {
   };
 
   const handlePermanentDelete = async (id: string) => {
-    if (confirm('Permanently delete this project? This cannot be undone.')) {
+    if (await confirmAction('Permanently delete this project? This cannot be undone.')) {
       await permanentlyDeletePortfolioItem({ data: { id } });
       router.invalidate();
     }
@@ -144,7 +145,7 @@ function PortfolioPage() {
       router.invalidate();
     } catch (error) {
       console.error("Failed to save portfolio item", error);
-      alert("Failed to save. If you uploaded an image, it might still be too large.");
+      showPopup("Failed to save. If you uploaded an image, it might still be too large.", "error");
     } finally {
       setIsSubmitting(false);
     }

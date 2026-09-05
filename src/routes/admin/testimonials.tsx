@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { confirmAction } from '../../components/CustomPopup';
 import { Plus, Edit2, Trash2, X, RefreshCw, Trash, Upload, UserCircle } from 'lucide-react';
 import { getTestimonials, getDeletedTestimonials, deleteTestimonial, restoreTestimonial, permanentlyDeleteTestimonial, addTestimonial, editTestimonial } from '../../server/admin';
 import { uploadImage } from '../../server/upload';
@@ -42,7 +43,7 @@ function TestimonialsPage() {
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
 
   const handleDelete = async (id: string) => {
-    if (confirm('Move to Recycle Bin?')) {
+    if (await confirmAction('Move to Recycle Bin?')) {
       await deleteTestimonial({ data: { id } });
       router.invalidate();
     }
@@ -54,7 +55,7 @@ function TestimonialsPage() {
   };
 
   const handlePermanentDelete = async (id: string) => {
-    if (confirm('Permanently delete this testimonial?')) {
+    if (await confirmAction('Permanently delete this testimonial?')) {
       await permanentlyDeleteTestimonial({ data: { id } });
       router.invalidate();
     }

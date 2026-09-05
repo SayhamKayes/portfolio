@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { confirmAction } from '../../components/CustomPopup';
 import { Plus, Edit2, Trash2, X, RefreshCw, Trash } from 'lucide-react';
 import { getEducations, getDeletedEducations, deleteEducation, restoreEducation, permanentlyDeleteEducation, addEducation, editEducation } from '../../server/admin';
 import { useState } from 'react';
@@ -36,7 +37,7 @@ function EducationPage() {
   });
 
   const handleDelete = async (id: string) => {
-    if (confirm('Move to Recycle Bin?')) {
+    if (await confirmAction('Move to Recycle Bin?')) {
       await deleteEducation({ data: { id } });
       router.invalidate();
     }
@@ -48,7 +49,7 @@ function EducationPage() {
   };
 
   const handlePermanentDelete = async (id: string) => {
-    if (confirm('Permanently delete this education?')) {
+    if (await confirmAction('Permanently delete this education?')) {
       await permanentlyDeleteEducation({ data: { id } });
       router.invalidate();
     }

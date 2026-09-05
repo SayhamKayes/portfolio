@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { confirmAction } from '../../components/CustomPopup';
 import { useState } from 'react';
 import { Globe, Plus, Edit2, Trash2, X, RefreshCw, Trash } from 'lucide-react';
 import { COUNTRIES } from '../../lib/countries';
@@ -37,7 +38,7 @@ function GlobalClientsPage() {
   });
 
   const handleDelete = async (id: string) => {
-    if (confirm('Move to Recycle Bin?')) {
+    if (await confirmAction('Move to Recycle Bin?')) {
       await deleteGlobalClient({ data: { id } });
       router.invalidate();
     }
@@ -49,7 +50,7 @@ function GlobalClientsPage() {
   };
 
   const handlePermanentDelete = async (id: string) => {
-    if (confirm('Permanently delete this global client?')) {
+    if (await confirmAction('Permanently delete this global client?')) {
       await permanentlyDeleteGlobalClient({ data: { id } });
       router.invalidate();
     }

@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { showPopup, confirmAction } from '../../components/CustomPopup';
 import { useState, useEffect } from 'react';
 import { getSiteSettings, updateSiteSetting, getSiteSettingBackups, createSiteSettingBackup, deleteSiteSettingBackup, getSkills } from '../../server/admin';
 import { getLoginSettings, updateLoginSettings, logout } from '../../server/auth';
@@ -74,7 +75,7 @@ function SettingsPage() {
       handleChange('heroSpecialities', current.filter((s: string) => s !== skillName).join(', '));
     } else {
       if (current.length >= 5) {
-        alert('Maximum 5 skills allowed!');
+        showPopup('Maximum 5 skills allowed!');
         return;
       }
       handleChange('heroSpecialities', [...current, skillName].join(', '));
@@ -83,8 +84,7 @@ function SettingsPage() {
 
 
 
-  const handleResetTypography = () => {
-    if (confirm('Are you sure you want to reset all typography to default?')) {
+  const handleResetTypography = async () => { if (await confirmAction('Are you sure you want to reset all typography to default?')) {
       const newForm = { ...formData };
       TYPOGRAPHY_KEYS.forEach(t => {
         newForm[t.key] = '';
@@ -158,9 +158,9 @@ function SettingsPage() {
       setHeroImageFile(null);
       setAboutImageFile(null);
 
-      alert('Settings saved successfully!');
+      showPopup('Settings saved successfully!');
     } catch (e) {
-      alert('Failed to save settings');
+      showPopup('Failed to save settings', "error");
     }
     setIsSaving(false);
   };
@@ -187,23 +187,23 @@ function SettingsPage() {
       }
     });
     getSiteSettingBackups().then(setBackups);
-    alert('Backup created successfully!');
+    showPopup('Backup created successfully!');
   };
 
   const handleRestoreHeroBackup = async (backupValue: string) => {
-    if (confirm('Are you sure you want to restore this backup? Unsaved changes will be lost.')) {
+    if (await confirmAction('Are you sure you want to restore this backup? Unsaved changes will be lost.')) {
       try {
         const parsed = JSON.parse(backupValue);
         setFormData(prev => ({ ...prev, ...parsed }));
-        alert('Backup loaded into form. Click Save All Settings to apply.');
+        showPopup('Backup loaded into form. Click Save All Settings to apply.');
       } catch (e) {
-        alert('Failed to parse backup data.');
+        showPopup('Failed to parse backup data.', "error");
       }
     }
   };
 
   const handleDeleteBackup = async (id: string) => {
-    if (confirm('Delete this backup permanently?')) {
+    if (await confirmAction('Delete this backup permanently?')) {
       await deleteSiteSettingBackup({ data: { id } });
       getSiteSettingBackups().then(setBackups);
     }
@@ -234,17 +234,17 @@ function SettingsPage() {
       }
     });
     getSiteSettingBackups().then(setBackups);
-    alert('Backup created successfully!');
+    showPopup('Backup created successfully!');
   };
 
   const handleRestoreAboutBackup = async (backupValue: string) => {
-    if (confirm('Are you sure you want to restore this backup? Unsaved changes will be lost.')) {
+    if (await confirmAction('Are you sure you want to restore this backup? Unsaved changes will be lost.')) {
       try {
         const parsed = JSON.parse(backupValue);
         setFormData(prev => ({ ...prev, ...parsed }));
-        alert('Backup loaded into form. Click Save All Settings to apply.');
+        showPopup('Backup loaded into form. Click Save All Settings to apply.');
       } catch (e) {
-        alert('Failed to parse backup data.');
+        showPopup('Failed to parse backup data.', "error");
       }
     }
   };
@@ -288,15 +288,15 @@ function SettingsPage() {
   const handleSaveLoginSettings = async () => {
     try {
       await updateLoginSettings({ data: loginData });
-      alert('Login settings saved successfully');
+      showPopup('Login settings saved successfully');
       setLoginData(prev => ({ ...prev, password: '' })); // clear password
     } catch (e) {
-      alert('Failed to save login settings');
+      showPopup('Failed to save login settings', "error");
     }
   };
 
   const handleLogout = async () => {
-    if (confirm('Are you sure you want to log out?')) {
+    if (await confirmAction('Are you sure you want to log out?')) {
       await logout();
       router.navigate({ to: '/login' });
     }
@@ -424,8 +424,7 @@ function SettingsPage() {
                     <Save size={16} /> Create Backup
                   </button>
                   <button
-                    onClick={() => {
-                      if (confirm('Reset Hero Section to defaults?')) {
+                    onClick={async () => { if (await confirmAction('Reset Hero Section to defaults?')) {
                         setFormData(prev => ({
                           ...prev,
                           heroName: '',
@@ -535,8 +534,7 @@ function SettingsPage() {
                     <Save size={16} /> Create Backup
                   </button>
                   <button
-                    onClick={() => {
-                      if (confirm('Reset About Section to defaults?')) {
+                    onClick={async () => { if (await confirmAction('Reset About Section to defaults?')) {
                         setFormData(prev => ({
                           ...prev,
                           aboutProfilePic: '',

@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { showPopup, confirmAction } from '../../components/CustomPopup';
 import { useState } from 'react';
 import { getMessages, markMessageRead, replyToMessage, deleteMessage } from '../../server/admin';
 import { Trash2, Reply, Check, Clock } from 'lucide-react';
@@ -33,7 +34,7 @@ function InboxPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this message?')) {
+    if (await confirmAction('Are you sure you want to delete this message?')) {
       await deleteMessage({ data: { id } });
       if (activeMessage === id) setActiveMessage(null);
       router.invalidate();
@@ -47,7 +48,7 @@ function InboxPage() {
     await replyToMessage({ data: { id: activeMessage, replyContent } });
     setIsReplying(false);
     setReplyContent('');
-    alert('Reply sent successfully!');
+    showPopup('Reply sent successfully!');
     router.invalidate();
   };
 
