@@ -13,7 +13,8 @@ export default defineConfig({
       },
     }),
     nitro({
-      preset: "vercel"
+      preset: "vercel",
+      moduleSideEffects: ["@prisma/client", "prisma"]
     }),
     viteReact(),
     tailwindcss(),

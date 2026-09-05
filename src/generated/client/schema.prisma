@@ -1,5 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  output        = "../src/generated/client"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -9,40 +11,40 @@ datasource db {
 }
 
 model User {
-  id                 String   @id @default(uuid())
-  username           String?  @unique
-  email              String?  @unique
-  password           String
-  phone              String?
-  emailVerification  Boolean  @default(false)
-  phoneVerification  Boolean  @default(false)
-  appVerification    Boolean  @default(false)
-  totpSecret         String?
-  recoveryToken      String?
+  id                  String    @id @default(uuid())
+  username            String?   @unique
+  email               String?   @unique
+  password            String
+  phone               String?
+  emailVerification   Boolean   @default(false)
+  phoneVerification   Boolean   @default(false)
+  appVerification     Boolean   @default(false)
+  totpSecret          String?
+  recoveryToken       String?
   recoveryTokenExpiry DateTime?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 }
 
 model PortfolioItem {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  imageUrl    String?
-  link        String?
-  githubLink  String?
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  imageUrl     String?
+  link         String?
+  githubLink   String?
   technologies String
-  category    String?
-  isDeleted   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  category     String?
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Skill {
   id        String   @id @default(uuid())
   name      String
   category  String?
-  level     Int?     // Percentage 1-100
+  level     Int? // Percentage 1-100
   icon      String?
   isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
@@ -65,9 +67,9 @@ model SiteSettingBackup {
 }
 
 model Testimonial {
-  id          String   @id @default(uuid())
-  name        String
-  designation String
+  id            String   @id @default(uuid())
+  name          String
+  designation   String
   content       String?
   avatarUrl     String?
   screenshotUrl String?
