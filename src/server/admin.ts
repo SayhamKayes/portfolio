@@ -2,6 +2,17 @@ import { createServerFn } from '@tanstack/react-start';
 import { prisma } from '../lib/prisma';
 import { z } from 'zod';
 import { deleteImageFromStorage } from './upload';
+import * as nodemailer from 'nodemailer';
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
+
+const SITE_OWNER_EMAIL = process.env.SITE_OWNER_EMAIL || process.env.GMAIL_USER || "sayhamkayes@gmail.com";
 
 export const getSiteSettings = createServerFn({ method: 'GET' }).handler(async () => {
   try {
@@ -279,9 +290,44 @@ export const submitMessage = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     try {
       const msg = await prisma.message.create({ data });
-      console.log(`New message from ${data.name} <${data.email}>: ${data.message}`);
-      return msg;
-    } catch (e) { return null; }
+      
+      if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+        // Notify owner
+        await transporter.sendMail({
+          from: `"Portfolio Contact" <${process.env.GMAIL_USER}>`,
+          to: SITE_OWNER_EMAIL,
+          subject: `New Message from ${data.name}`,
+          html: `
+            <h2>New Message Received</h2>
+            <p><strong>Name:</strong> ${data.name}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Subject:</strong> ${data.subject || 'N/A'}</p>
+            <p><strong>Message:</strong></p>
+            <blockquote style="border-left:4px solid #ccc;padding-left:10px;">${data.message.replace(/\n/g, '<br/>')}</blockquote>
+          `,
+        }).catch(err => console.error("Failed to send notification email:", err));
+
+        // Auto-reply user
+        await transporter.sendMail({
+          from: `"Sayham Kayes" <${process.env.GMAIL_USER}>`,
+          to: data.email,
+          subject: 'Thank you for reaching out!',
+          html: `
+            <h2>Hi ${data.name},</h2>
+            <p>Thank you for getting in touch. I have received your message and will get back to you within 24 hours.</p>
+            <br/>
+            <p>Best regards,</p>
+            <p><strong>Sayham Kayes</strong></p>
+            <p>Full Stack & AI/ML Developer</p>
+          `,
+        }).catch(err => console.error("Failed to send auto-reply:", err));
+      }
+
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return { success: false };
+    }
   });
 export const getMessages = createServerFn({ method: 'GET' }).handler(async () => {
   try { return await prisma.message.findMany({ orderBy: { createdAt: 'desc' } }); } catch (e) { return []; }
@@ -297,11 +343,30 @@ export const replyToMessage = createServerFn({ method: 'POST' })
     try {
       const msg = await prisma.message.findUnique({ where: { id: data.id } });
       if (msg) {
-        console.log(`Simulated Email Reply to ${msg.email}:\n${data.replyContent}`);
-        return await prisma.message.update({ where: { id: data.id }, data: { isRead: true } });
+        if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+          await transporter.sendMail({
+            from: `"Sayham Kayes" <${process.env.GMAIL_USER}>`,
+            to: msg.email,
+            subject: `Re: ${msg.subject || 'Your message to Sayham Kayes'}`,
+            html: `
+              <p>${data.replyContent.replace(/\n/g, '<br/>')}</p>
+              <br/><br/>
+              <hr/>
+              <p><em>On ${msg.createdAt.toLocaleDateString()}, you wrote:</em></p>
+              <blockquote style="border-left: 4px solid #ccc; padding-left: 10px; color: #555;">
+                ${msg.message.replace(/\n/g, '<br/>')}
+              </blockquote>
+            `,
+          }).catch(err => console.error("Failed to send reply:", err));
+        }
+        await prisma.message.update({ where: { id: data.id }, data: { isRead: true, isReplied: true } });
+        return { success: true };
       }
-      return null;
-    } catch (e) { return null; }
+      return { success: false };
+    } catch (e) { 
+      console.error(e);
+      return { success: false }; 
+    }
   });
 export const deleteMessage = createServerFn({ method: 'POST' })
   .validator((d: { id: string }) => d)
