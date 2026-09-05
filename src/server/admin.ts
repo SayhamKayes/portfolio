@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import { prisma } from '../lib/prisma';
 import { z } from 'zod';
+import { deleteImageFromStorage } from './upload';
 
 export const getSiteSettings = createServerFn({ method: 'GET' }).handler(async () => {
   try {
@@ -74,7 +75,16 @@ export const restorePortfolioItem = createServerFn({ method: 'POST' })
 export const permanentlyDeletePortfolioItem = createServerFn({ method: 'POST' })
   .validator((d: { id: string }) => d)
   .handler(async ({ data }) => {
-    try { return await prisma.portfolioItem.delete({ where: { id: data.id } }); } catch (e) { return null; }
+    try {
+      const item = await prisma.portfolioItem.findUnique({ where: { id: data.id } });
+      const deletedItem = await prisma.portfolioItem.delete({ where: { id: data.id } });
+
+      if (item?.imageUrl) {
+        await deleteImageFromStorage(item.imageUrl);
+      }
+
+      return deletedItem;
+    } catch (e) { return null; }
   });
 
 // SKILLS
@@ -107,7 +117,16 @@ export const restoreSkill = createServerFn({ method: 'POST' })
 export const permanentlyDeleteSkill = createServerFn({ method: 'POST' })
   .validator((d: { id: string }) => d)
   .handler(async ({ data }) => {
-    try { return await prisma.skill.delete({ where: { id: data.id } }); } catch (e) { return null; }
+    try {
+      const item = await prisma.skill.findUnique({ where: { id: data.id } });
+      const deletedItem = await prisma.skill.delete({ where: { id: data.id } });
+
+      if (item?.icon) {
+        await deleteImageFromStorage(item.icon);
+      }
+
+      return deletedItem;
+    } catch (e) { return null; }
   });
 
 // TESTIMONIALS
@@ -140,7 +159,19 @@ export const restoreTestimonial = createServerFn({ method: 'POST' })
 export const permanentlyDeleteTestimonial = createServerFn({ method: 'POST' })
   .validator((d: { id: string }) => d)
   .handler(async ({ data }) => {
-    try { return await prisma.testimonial.delete({ where: { id: data.id } }); } catch (e) { return null; }
+    try {
+      const item = await prisma.testimonial.findUnique({ where: { id: data.id } });
+      const deletedItem = await prisma.testimonial.delete({ where: { id: data.id } });
+
+      if (item?.avatarUrl) {
+        await deleteImageFromStorage(item.avatarUrl);
+      }
+      if (item?.screenshotUrl) {
+        await deleteImageFromStorage(item.screenshotUrl);
+      }
+
+      return deletedItem;
+    } catch (e) { return null; }
   });
 
 // GLOBAL CLIENTS
