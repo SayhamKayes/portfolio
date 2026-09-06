@@ -10,6 +10,11 @@ export const Route = createFileRoute('/admin')({
       throw redirect({ to: '/login' });
     }
   },
+  head: () => ({
+    meta: [
+      { title: "Sayham Kayes | Admin Panel" }
+    ]
+  }),
   component: AdminLayout,
 });
 
@@ -30,17 +35,16 @@ function AdminLayout() {
     <div className="flex h-screen bg-gray-100 dark:bg-zinc-950 text-gray-900 dark:text-gray-100 overflow-hidden">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden" 
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={closeSidebar}
         ></div>
       )}
 
       {/* Sidebar */}
-      <aside 
-        className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <div className="p-6 border-b border-gray-200 dark:border-zinc-800 flex justify-between items-center">
           <h2 className="text-2xl font-bold">Admin Panel</h2>
@@ -142,7 +146,7 @@ function AdminLayout() {
       {/* Main Content */}
       <main className="flex-1 overflow-auto flex flex-col h-screen">
         <header className="md:hidden bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 p-4 flex items-center shrink-0">
-          <button 
+          <button
             onClick={() => setIsSidebarOpen(true)}
             className="p-2 -ml-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg"
           >

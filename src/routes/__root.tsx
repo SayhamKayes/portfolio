@@ -86,14 +86,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sayham Kayes — Full Stack & AI/ML Developer" },
+      { title: "Sayham Kayes | Full Stack & AI/ML Developer" },
       {
         name: "description",
         content:
           "Personal portfolio of Sayham Kayes — Full Stack Developer, and AI/ML enthusiast crafting premium digital experiences.",
       },
       { name: "author", content: "Sayham Kayes" },
-      { property: "og:title", content: "Sayham Kayes — Full Stack & AI/ML Developer" },
+      { property: "og:title", content: "Sayham Kayes | Full Stack & AI/ML Developer" },
       {
         property: "og:description",
         content: "Premium portfolio showcasing full stack, Python, and AI/ML projects.",

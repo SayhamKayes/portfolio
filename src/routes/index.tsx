@@ -16,13 +16,13 @@ import { getPortfolioItems, getSkills, getSiteSettings, getTestimonials, getExpe
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Sayham Kayes — Full Stack & AI/ML Developer" },
+      { title: "Sayham Kayes | Full Stack & AI/ML Developer" },
       {
         name: "description",
         content:
           "Premium portfolio of Sayham Kayes — Full Stack, Python, and AI/ML developer crafting award-winning digital experiences.",
       },
-      { property: "og:title", content: "Sayham Kayes — Full Stack & AI/ML Developer" },
+      { property: "og:title", content: "Sayham Kayes | Full Stack & AI/ML Developer" },
       {
         property: "og:description",
         content: "Premium portfolio showcasing full stack, Python, and AI/ML projects.",
@@ -46,9 +46,9 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { portfolioItems, skills, settings, testimonials, experiences, educations, globalClients } = Route.useLoaderData();
-  
+
   const getSetting = (key: string) => settings?.find((s: any) => s.key === key)?.value;
-  
+
   const primaryColor = getSetting('primaryColor');
   const headerBgColor = getSetting('headerBgColor');
   const headerFontColor = getSetting('headerFontColor');
@@ -60,21 +60,21 @@ function Index() {
   const h5Color = getSetting('h5Color');
   const h6Color = getSetting('h6Color');
   const pColor = getSetting('pColor');
-  
+
   const globalFont = getSetting('globalFont');
   const headingFont = getSetting('headingFont');
   const pFont = getSetting('pFont');
-  
+
   // Create inline styles to override the CSS variables if a custom color is set
   const customStyles: Record<string, string> = {};
-  
+
   if (primaryColor) {
     customStyles['--cyan'] = primaryColor;
     customStyles['--electric'] = primaryColor;
     customStyles['--primary'] = primaryColor;
     customStyles['--gradient-primary'] = `linear-gradient(135deg, ${primaryColor}, ${primaryColor}, ${primaryColor})`;
   }
-  
+
   if (headerBgColor) customStyles['--header-bg'] = headerBgColor;
   if (headerFontColor) customStyles['--header-font'] = headerFontColor;
   if (descriptionColor) customStyles['--color-muted-foreground'] = descriptionColor;
@@ -85,10 +85,10 @@ function Index() {
   if (h5Color) customStyles['--h5-color'] = h5Color;
   if (h6Color) customStyles['--h6-color'] = h6Color;
   if (pColor) customStyles['--p-color'] = pColor;
-  
+
   useEffect(() => {
     const fontsToLoad = new Set([globalFont, headingFont, pFont].filter(Boolean) as string[]);
-    
+
     if (fontsToLoad.size > 0) {
       const link = document.createElement('link');
       const fontFamilies = Array.from(fontsToLoad).map(f => `family=${f.replace(/ /g, '+')}:wght@300;400;500;600;700`).join('&');
@@ -118,7 +118,7 @@ function Index() {
     const getVal = (k: string) => settings?.find((s: any) => s.key === k && s.value)?.value;
 
     const themeMode = getVal('themeMode');
-    
+
     // Core glow variables for ALL themes
     css += `
       :root, .dark {
@@ -182,7 +182,7 @@ function Index() {
   const dynamicStyles = generateDynamicStyles();
 
   return (
-    <div 
+    <div
       className="relative min-h-screen w-full overflow-x-hidden bg-background text-foreground"
       style={customStyles as React.CSSProperties}
     >
