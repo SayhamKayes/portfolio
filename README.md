@@ -25,7 +25,7 @@ Showcasing skills, projects, experience, testimonials, and a custom built backen
 
 ## 🌐 Live Demo
 
-> **Portfolio:** https://sayhamkayes.com (Update with your domain)
+> **Portfolio:** https://sayhamkayes.vercel.app/
 
 ---
 
