@@ -170,6 +170,7 @@ function BackToTopButton() {
 
 import { NavigationLoader, InitialPreloader } from "../components/Preloader";
 import { CustomPopupProvider } from "../components/CustomPopup";
+import { WhatsAppWidget } from "../components/WhatsAppWidget";
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
@@ -183,6 +184,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <CustomPopupProvider />
         {children}
         <BackToTopButton />
+        <WhatsAppWidget />
         {/* <CozeChatWidget /> */}
         <Scripts />
       </body>
