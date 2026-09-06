@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useLocation,
 } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
@@ -173,6 +174,8 @@ import { CustomPopupProvider } from "../components/CustomPopup";
 import { WhatsAppWidget } from "../components/WhatsAppWidget";
 
 function RootShell({ children }: { children: ReactNode }) {
+  const location = useLocation();
+  const isAdminPage = location.pathname.startsWith('/admin');
   return (
     <html lang="en">
       <head>
@@ -184,7 +187,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <CustomPopupProvider />
         {children}
         <BackToTopButton />
-        <WhatsAppWidget />
+        {!isAdminPage && <WhatsAppWidget />}
         {/* <CozeChatWidget /> */}
         <Scripts />
       </body>
