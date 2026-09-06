@@ -38,6 +38,21 @@ export const updateSiteSetting = createServerFn({ method: 'POST' })
     }
   });
 
+export const incrementProfileViews = createServerFn({ method: 'POST' }).handler(async () => {
+  try {
+    const setting = await prisma.siteSetting.findUnique({ where: { key: 'profileViews' } });
+    const currentViews = setting ? parseInt(setting.value) || 0 : 0;
+    return await prisma.siteSetting.upsert({
+      where: { key: 'profileViews' },
+      update: { value: (currentViews + 1).toString() },
+      create: { key: 'profileViews', value: '1' },
+    });
+  } catch (e) {
+    console.error('Failed to increment profile views', e);
+    return null;
+  }
+});
+
 export const getSiteSettingBackups = createServerFn({ method: 'GET' }).handler(async () => {
   try { return await prisma.siteSettingBackup.findMany({ orderBy: { createdAt: 'desc' } }); } catch (e) { return []; }
 });
@@ -290,7 +305,7 @@ export const submitMessage = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     try {
       const msg = await prisma.message.create({ data });
-      
+
       if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
         // Notify owner
         await transporter.sendMail({
@@ -360,12 +375,26 @@ export const replyToMessage = createServerFn({ method: 'POST' })
           }).catch(err => console.error("Failed to send reply:", err));
         }
         await prisma.message.update({ where: { id: data.id }, data: { isRead: true, isReplied: true } });
+
+        // Save admin reply to database to keep chat history
+        await prisma.message.create({
+          data: {
+            name: "Sayham (Admin)",
+            email: msg.email,
+            subject: `Re: ${msg.subject || 'No Subject'}`,
+            message: data.replyContent,
+            sender: "admin",
+            isRead: true,
+            isReplied: true,
+          }
+        });
+
         return { success: true };
       }
       return { success: false };
-    } catch (e) { 
+    } catch (e) {
       console.error(e);
-      return { success: false }; 
+      return { success: false };
     }
   });
 export const deleteMessage = createServerFn({ method: 'POST' })
@@ -384,7 +413,7 @@ export const getDashboardStats = createServerFn({ method: 'GET' }).handler(async
     const profileViewsSetting = await prisma.siteSetting.findUnique({ where: { key: 'profileViews' } });
     const profileViews = profileViewsSetting ? parseInt(profileViewsSetting.value) : 0;
     const totalGlobalClients = await prisma.globalClient.count({ where: { isDeleted: false } });
-    
+
     return { totalProjects, totalSkills, totalMessages, unreadMessages, profileViews, totalGlobalClients };
   } catch (e) {
     return { totalProjects: 0, totalSkills: 0, totalMessages: 0, unreadMessages: 0, profileViews: 0, totalGlobalClients: 0 };
