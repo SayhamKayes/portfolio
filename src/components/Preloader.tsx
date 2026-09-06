@@ -5,10 +5,14 @@ export function NavigationLoader() {
   const isLoading = useRouterState({ select: (s) => s.status === "pending" });
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [progress, setProgress] = useState(0);
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isLoading) {
+      const autoUpdate = typeof window !== 'undefined' && (window as any).__IS_AUTO_UPDATE__;
+      setIsHidden(autoUpdate);
+      
       setProgress(10);
       interval = setInterval(() => {
         setProgress((prev) => (prev < 90 ? prev + Math.random() * 10 : prev));
@@ -17,6 +21,7 @@ export function NavigationLoader() {
       setProgress(100);
       const timeout = setTimeout(() => {
         setProgress(0);
+        setIsHidden(false);
       }, 300);
       return () => clearTimeout(timeout);
     }
@@ -26,6 +31,7 @@ export function NavigationLoader() {
   }, [isLoading]);
 
   if (!pathname.startsWith('/admin')) return null;
+  if (isHidden) return null;
   if (progress === 0 && !isLoading) return null;
 
   return (
