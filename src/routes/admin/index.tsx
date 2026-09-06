@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { LayoutDashboard, Users, Briefcase, Code, MessageSquare, Globe, Settings, LogOut } from 'lucide-react';
 import { getDashboardStats } from '../../server/admin';
 import { logout } from '../../server/auth';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/admin/')({
   component: AdminDashboard,
@@ -11,6 +12,17 @@ export const Route = createFileRoute('/admin/')({
 function AdminDashboard() {
   const stats = Route.useLoaderData();
   const router = useRouter();
+
+  // Real-time updates via polling (every 5 seconds)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      (window as any).__IS_AUTO_UPDATE__ = true;
+      router.invalidate().finally(() => {
+        (window as any).__IS_AUTO_UPDATE__ = false;
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [router]);
 
   const handleLogout = async () => {
     await logout();
