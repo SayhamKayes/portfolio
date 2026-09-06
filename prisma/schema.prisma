@@ -84,6 +84,7 @@ model Message {
   message   String
   isRead    Boolean  @default(false)
   isReplied Boolean  @default(false)
+  sender    String   @default("user")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
