@@ -1,5 +1,6 @@
 import { useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import logoUrl from "../assets/logo.png?url";
 
 export function NavigationLoader() {
   const isLoading = useRouterState({ select: (s) => s.status === "pending" });
@@ -12,7 +13,7 @@ export function NavigationLoader() {
     if (isLoading) {
       const autoUpdate = typeof window !== 'undefined' && (window as any).__IS_AUTO_UPDATE__;
       setIsHidden(autoUpdate);
-      
+
       setProgress(10);
       interval = setInterval(() => {
         setProgress((prev) => (prev < 90 ? prev + Math.random() * 10 : prev));
@@ -63,15 +64,14 @@ export function InitialPreloader() {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-300 ${
-        fade ? "opacity-0" : "opacity-100"
-      }`}
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-300 ${fade ? "opacity-0" : "opacity-100"
+        }`}
     >
       <div className="relative flex h-20 w-20 items-center justify-center">
         {/* Outer spinning ring */}
         <div className="absolute inset-0 animate-spin rounded-full border-4 border-muted border-t-[#30C697]" />
-        {/* Inner pulsing circle */}
-        <div className="h-10 w-10 animate-pulse rounded-full bg-[#30C697]/20" />
+        {/* Inner pulsing logo */}
+        <img src={logoUrl} alt="Logo" className="h-10 w-10 object-contain animate-pulse" />
       </div>
       <p className="mt-4 text-sm font-medium tracking-widest text-[#30C697] animate-pulse">
         LOADING...
