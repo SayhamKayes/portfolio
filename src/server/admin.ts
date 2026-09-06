@@ -307,34 +307,20 @@ export const submitMessage = createServerFn({ method: 'POST' })
       const msg = await prisma.message.create({ data });
 
       if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
-        // Notify owner
+        // Notify owner (Admin Notification)
+        // Kept 100% plain text and removed replyTo spoofing to avoid spam flags.
         await transporter.sendMail({
-          from: `"Portfolio Contact" <${process.env.GMAIL_USER}>`,
           to: SITE_OWNER_EMAIL,
           subject: `New Message from ${data.name}`,
-          html: `
-            <h2>New Message Received</h2>
-            <p><strong>Name:</strong> ${data.name}</p>
-            <p><strong>Email:</strong> ${data.email}</p>
-            <p><strong>Subject:</strong> ${data.subject || 'N/A'}</p>
-            <p><strong>Message:</strong></p>
-            <blockquote style="border-left:4px solid #ccc;padding-left:10px;">${data.message.replace(/\n/g, '<br/>')}</blockquote>
-          `,
+          text: `Name: ${data.name}\nEmail: ${data.email}\nSubject: ${data.subject || 'N/A'}\n\nMessage:\n${data.message}`
         }).catch(err => console.error("Failed to send notification email:", err));
 
-        // Auto-reply user
+        // Auto-reply to user
+        // 100% plain text, no HTML, no custom 'From' name. This mimics a human email.
         await transporter.sendMail({
-          from: `"Sayham Kayes" <${process.env.GMAIL_USER}>`,
           to: data.email,
-          subject: 'Thank you for reaching out!',
-          html: `
-            <h2>Hi ${data.name},</h2>
-            <p>Thank you for getting in touch. I have received your message and will get back to you within 24 hours.</p>
-            <br/>
-            <p>Best regards,</p>
-            <p><strong>Sayham Kayes</strong></p>
-            <p>Full Stack & AI/ML Developer</p>
-          `,
+          subject: 'Thank you for reaching out',
+          text: `Hi ${data.name},\n\nI have received your message and will get back to you shortly.\n\nBest regards,\nSayham Kayes`
         }).catch(err => console.error("Failed to send auto-reply:", err));
       }
 
@@ -360,18 +346,9 @@ export const replyToMessage = createServerFn({ method: 'POST' })
       if (msg) {
         if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
           await transporter.sendMail({
-            from: `"Sayham Kayes" <${process.env.GMAIL_USER}>`,
             to: msg.email,
-            subject: `Re: ${msg.subject || 'Your message to Sayham Kayes'}`,
-            html: `
-              <p>${data.replyContent.replace(/\n/g, '<br/>')}</p>
-              <br/><br/>
-              <hr/>
-              <p><em>On ${msg.createdAt.toLocaleDateString()}, you wrote:</em></p>
-              <blockquote style="border-left: 4px solid #ccc; padding-left: 10px; color: #555;">
-                ${msg.message.replace(/\n/g, '<br/>')}
-              </blockquote>
-            `,
+            subject: `Re: ${msg.subject || 'Your message'}`,
+            text: `${data.replyContent}\n\n---\nSayham Kayes\nFull Stack & AI/ML Developer`
           }).catch(err => console.error("Failed to send reply:", err));
         }
         await prisma.message.update({ where: { id: data.id }, data: { isRead: true, isReplied: true } });
@@ -408,8 +385,8 @@ export const getDashboardStats = createServerFn({ method: 'GET' }).handler(async
   try {
     const totalProjects = await prisma.portfolioItem.count({ where: { isDeleted: false } });
     const totalSkills = await prisma.skill.count({ where: { isDeleted: false } });
-    const totalMessages = await prisma.message.count();
-    const unreadMessages = await prisma.message.count({ where: { isRead: false } });
+    const totalMessages = await prisma.message.count({ where: { sender: { not: 'admin' } } });
+    const unreadMessages = await prisma.message.count({ where: { isRead: false, sender: { not: 'admin' } } });
     const profileViewsSetting = await prisma.siteSetting.findUnique({ where: { key: 'profileViews' } });
     const profileViews = profileViewsSetting ? parseInt(profileViewsSetting.value) : 0;
     const totalGlobalClients = await prisma.globalClient.count({ where: { isDeleted: false } });
