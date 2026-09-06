@@ -11,7 +11,7 @@ import { Contact } from "@/components/contact";
 import { Footer } from "@/components/footer";
 import { CursorGlow, ScrollProgress } from "@/components/effects";
 import WorldMap from "@/components/worldMap";
-import { getPortfolioItems, getSkills, getSiteSettings, getTestimonials, getExperiences, getEducations, getGlobalClients } from "@/server/admin";
+import { getPortfolioItems, getSkills, getSiteSettings, getTestimonials, getExperiences, getEducations, getGlobalClients, incrementProfileViews } from "@/server/admin";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -180,6 +180,17 @@ function Index() {
   };
 
   const dynamicStyles = generateDynamicStyles();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hasVisited = localStorage.getItem('hasVisited');
+      if (!hasVisited) {
+        incrementProfileViews().then(() => {
+          localStorage.setItem('hasVisited', 'true');
+        }).catch(console.error);
+      }
+    }
+  }, []);
 
   return (
     <div
