@@ -110,6 +110,14 @@ function AdminLayout() {
             <span>Global Clients</span>
           </Link>
           <Link
+            to="/admin/client-bookings"
+            onClick={closeSidebar}
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 [&.active]:bg-gray-100 dark:[&.active]:bg-zinc-800"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14h6"></path><path d="M9 18h6"></path><path d="M9 10h6"></path></svg>
+            <span>Client Bookings</span>
+          </Link>
+          <Link
             to="/admin/inbox"
             onClick={closeSidebar}
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 [&.active]:bg-gray-100 dark:[&.active]:bg-zinc-800"

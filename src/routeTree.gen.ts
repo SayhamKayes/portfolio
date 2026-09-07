@@ -22,6 +22,7 @@ import { Route as AdminInboxRouteImport } from './routes/admin/inbox'
 import { Route as AdminGlobalClientsRouteImport } from './routes/admin/global-clients'
 import { Route as AdminExperienceRouteImport } from './routes/admin/experience'
 import { Route as AdminEducationRouteImport } from './routes/admin/education'
+import { Route as AdminClientBookingsRouteImport } from './routes/admin/client-bookings'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -88,12 +89,18 @@ const AdminEducationRoute = AdminEducationRouteImport.update({
   path: '/education',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminClientBookingsRoute = AdminClientBookingsRouteImport.update({
+  id: '/client-bookings',
+  path: '/client-bookings',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/admin/client-bookings': typeof AdminClientBookingsRoute
   '/admin/education': typeof AdminEducationRoute
   '/admin/experience': typeof AdminExperienceRoute
   '/admin/global-clients': typeof AdminGlobalClientsRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/admin/client-bookings': typeof AdminClientBookingsRoute
   '/admin/education': typeof AdminEducationRoute
   '/admin/experience': typeof AdminExperienceRoute
   '/admin/global-clients': typeof AdminGlobalClientsRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/admin/client-bookings': typeof AdminClientBookingsRoute
   '/admin/education': typeof AdminEducationRoute
   '/admin/experience': typeof AdminExperienceRoute
   '/admin/global-clients': typeof AdminGlobalClientsRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/forgot-password'
     | '/login'
+    | '/admin/client-bookings'
     | '/admin/education'
     | '/admin/experience'
     | '/admin/global-clients'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/'
     | '/forgot-password'
     | '/login'
+    | '/admin/client-bookings'
     | '/admin/education'
     | '/admin/experience'
     | '/admin/global-clients'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/forgot-password'
     | '/login'
+    | '/admin/client-bookings'
     | '/admin/education'
     | '/admin/experience'
     | '/admin/global-clients'
@@ -281,10 +293,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEducationRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/client-bookings': {
+      id: '/admin/client-bookings'
+      path: '/client-bookings'
+      fullPath: '/admin/client-bookings'
+      preLoaderRoute: typeof AdminClientBookingsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
+  AdminClientBookingsRoute: typeof AdminClientBookingsRoute
   AdminEducationRoute: typeof AdminEducationRoute
   AdminExperienceRoute: typeof AdminExperienceRoute
   AdminGlobalClientsRoute: typeof AdminGlobalClientsRoute
@@ -297,6 +317,7 @@ interface AdminRouteRouteChildren {
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminClientBookingsRoute: AdminClientBookingsRoute,
   AdminEducationRoute: AdminEducationRoute,
   AdminExperienceRoute: AdminExperienceRoute,
   AdminGlobalClientsRoute: AdminGlobalClientsRoute,
