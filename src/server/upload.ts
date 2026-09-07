@@ -73,3 +73,43 @@ export const deleteImageFromStorage = async (imageUrl: string | null | undefined
     console.error("Error deleting image:", e);
   }
 };
+
+export const uploadClientFile = createServerFn({ method: 'POST' })
+  .validator(z.object({
+    filename: z.string(),
+    contentType: z.string(),
+    base64Data: z.string()
+  }))
+  .handler(async ({ data }) => {
+    try {
+      const safeFilename = data.filename.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      const uniqueFilename = `${Date.now()}-${safeFilename}`;
+
+      const base64Data = data.base64Data.replace(/^data:\w+\/[-+.\w]+;base64,/, '');
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      const { data: uploadData, error } = await supabase
+        .storage
+        .from('sayham-kayes-images') 
+        .upload(uniqueFilename, buffer, {
+          contentType: data.contentType || 'application/octet-stream',
+          upsert: true
+        });
+
+      if (error) {
+        console.error('Supabase upload error:', error);
+        throw new Error('Supabase Upload failed');
+      }
+
+      const { data: publicUrlData } = supabase
+        .storage
+        .from('sayham-kayes-images')
+        .getPublicUrl(uniqueFilename);
+
+      return publicUrlData.publicUrl;
+
+    } catch (e) {
+      console.error('File upload failed', e);
+      throw new Error('Upload failed');
+    }
+  });
