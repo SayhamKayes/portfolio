@@ -62,7 +62,7 @@ export function Navbar() {
           </nav>
 
           <a
-            href="#contact"
+            href="#hire-me"
             className="hidden rounded-full bg-gradient-to-r from-cyan to-electric px-5 py-2 text-sm font-medium text-background transition-shadow hover:shadow-[0_0_30px_var(--glow-color-strong)] lg:inline-block"
           >
             Hire Me

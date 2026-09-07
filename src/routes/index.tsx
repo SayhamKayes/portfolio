@@ -8,6 +8,7 @@ import { Projects } from "@/components/projects";
 import { Experience } from "@/components/experience";
 import { Testimonials } from "@/components/testimonials";
 import { Contact } from "@/components/contact";
+import { HireMe } from "@/components/hire-me";
 import { Footer } from "@/components/footer";
 import { CursorGlow, ScrollProgress } from "@/components/effects";
 import WorldMap from "@/components/worldMap";
@@ -210,6 +211,7 @@ function Index() {
         <Experience items={experiences} educations={educations} />
         <Testimonials items={testimonials} />
         <WorldMap settings={settings} globalClients={globalClients} />
+        <HireMe />
         <Contact settings={settings} />
       </main>
 
