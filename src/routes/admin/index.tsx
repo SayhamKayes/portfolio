@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
-import { LayoutDashboard, Users, Briefcase, Code, MessageSquare, Globe, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, Code, MessageSquare, Globe, Settings, LogOut, CalendarDays } from 'lucide-react';
 import { getDashboardStats } from '../../server/admin';
 import { logout } from '../../server/auth';
 import { useEffect } from 'react';
@@ -75,6 +75,21 @@ function AdminDashboard() {
               {stats.totalMessages} 
               {stats.unreadMessages > 0 && (
                 <span className="text-sm text-red-500 ml-2">({stats.unreadMessages} new)</span>
+              )}
+            </p>
+          </div>
+        </Link>
+
+        <Link to="/admin/client-bookings" className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-gray-200 dark:border-zinc-800 flex items-center gap-4 hover:border-blue-500 transition-colors cursor-pointer group">
+          <div className="p-3 bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-lg group-hover:bg-teal-200 dark:group-hover:bg-teal-800/50 transition-colors">
+            <CalendarDays size={24} />
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Client Bookings</p>
+            <p className="text-2xl font-bold">
+              {stats.totalClientBookings} 
+              {stats.unreadClientBookings > 0 && (
+                <span className="text-sm text-red-500 ml-2">({stats.unreadClientBookings} new)</span>
               )}
             </p>
           </div>
