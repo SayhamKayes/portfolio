@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
 import { About } from "@/components/about";
@@ -11,6 +11,8 @@ import { Contact } from "@/components/contact";
 import { HireMe } from "@/components/hire-me";
 import { Footer } from "@/components/footer";
 import { CursorGlow, ScrollProgress } from "@/components/effects";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { CookieBanner } from "@/components/cookie-banner";
 import WorldMap from "@/components/worldMap";
 import { getPortfolioItems, getSkills, getSiteSettings, getTestimonials, getExperiences, getEducations, getGlobalClients, incrementProfileViews } from "@/server/admin";
 
@@ -47,8 +49,37 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { portfolioItems, skills, settings, testimonials, experiences, educations, globalClients } = Route.useLoaderData();
-
+  const [cookieConsent, setCookieConsent] = useState<boolean>(false);
+  
   const getSetting = (key: string) => settings?.find((s: any) => s.key === key)?.value;
+  
+  const initialTheme = getSetting('themeMode') || '';
+  const [userTheme, setUserTheme] = useState<string>(initialTheme);
+
+  useEffect(() => {
+    // Only apply localStorage theme if it exists and consent is present
+    const savedTheme = localStorage.getItem("userTheme");
+    const consent = localStorage.getItem("cookieConsent");
+    if (savedTheme !== null && consent === "true") {
+      setUserTheme(savedTheme);
+      setCookieConsent(true);
+    }
+    
+    // Listen for admin settings updates
+    try {
+      const bc = new BroadcastChannel('portfolio_settings_channel');
+      bc.onmessage = (event) => {
+        if (event.data && event.data.type === 'SETTINGS_UPDATED') {
+          // Reset the local userTheme cookie so the admin changes are applied
+          localStorage.removeItem("userTheme");
+          window.location.reload();
+        }
+      };
+      return () => bc.close();
+    } catch (err) {
+      console.error('BroadcastChannel not supported:', err);
+    }
+  }, []);
 
   const primaryColor = getSetting('primaryColor');
   const headerBgColor = getSetting('headerBgColor');
@@ -116,9 +147,8 @@ function Index() {
 
   const generateDynamicStyles = () => {
     let css = '';
-    const getVal = (k: string) => settings?.find((s: any) => s.key === k && s.value)?.value;
-
-    const themeMode = getVal('themeMode');
+    // Use userTheme instead of fetching from settings array
+    const themeMode = userTheme;
 
     // Core glow variables for ALL themes
     css += `
@@ -216,6 +246,13 @@ function Index() {
       </main>
 
       <Footer settings={settings} />
+      
+      <CookieBanner onConsentChange={setCookieConsent} />
+      <ThemeSwitcher 
+        currentTheme={userTheme} 
+        onThemeChange={setUserTheme} 
+        hasConsent={cookieConsent} 
+      />
     </div>
   );
 }
