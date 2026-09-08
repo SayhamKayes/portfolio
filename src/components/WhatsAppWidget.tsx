@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 export function WhatsAppWidget() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // আপনার সোশ্যাল লিংকগুলো এখানে দিন
   const socialLinks = [
     {
       id: 'whatsapp',
@@ -22,7 +21,7 @@ export function WhatsAppWidget() {
     {
       id: 'messenger',
       name: 'Messenger',
-      url: 'https://m.me/sayhamkayes', // আপনার Messenger ইউজারনেম দিন
+      url: 'https://m.me/sayhamkayes',
       bgColor: 'bg-[#0084FF]',
       hoverColor: 'hover:bg-[#006bce]',
       icon: (
@@ -34,7 +33,7 @@ export function WhatsAppWidget() {
     {
       id: 'instagram',
       name: 'Instagram',
-      url: 'https://ig.me/m/sayhamkayes', // আপনার Instagram ইউজারনেম দিন
+      url: 'https://ig.me/m/sayhamkayes',
       bgColor: 'bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888]',
       hoverColor: 'hover:opacity-80',
       icon: (
@@ -46,7 +45,7 @@ export function WhatsAppWidget() {
   ];
 
   return (
-    <div className="fixed bottom-24 right-6 z-[100] flex flex-col items-end">
+    <div className="fixed bottom-20 right-6 z-[100] flex flex-col items-end">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -79,14 +78,14 @@ export function WhatsAppWidget() {
       </AnimatePresence>
 
       {/* Floating Toggle Button */}
-      <div className="relative h-14 w-14">
+      <div className="relative h-11 w-11">
         {/* Open Button */}
         <button
           onClick={() => setIsOpen(true)}
           className={`absolute inset-0 flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_0_20px_rgba(20,184,166,0.3)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_30px_rgba(20,184,166,0.5)] focus:outline-none ${isOpen ? 'rotate-180 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`}
           aria-label="Open Contact Options"
         >
-          <MessageCircle className="h-7 w-7" />
+          <MessageCircle className="h-5 w-5" />
         </button>
 
         {/* Close Button */}
