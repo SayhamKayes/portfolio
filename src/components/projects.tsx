@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Github } from "lucide-react";
+import { ArrowUpRight, Github, Eye, Monitor, Tablet, Smartphone, X } from "lucide-react";
 import { FadeUp } from "./motion-primitives";
 import p1 from "@/assets/projects_preview/projects_preview_1.jpg";
 import p2 from "@/assets/projects_preview/projects_preview_2.jpg";
@@ -27,6 +27,20 @@ export function Projects({ items = [] }: { items?: any[] }) {
 
   const [active, setActive] = useState<Cat>("All");
   const filtered = active === "All" ? dbItems : dbItems.filter((p) => p.cat.includes(active));
+
+  const [previewProject, setPreviewProject] = useState<any>(null);
+  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+
+  useEffect(() => {
+    if (previewProject) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [previewProject]);
 
   return (
     <section id="projects" className="relative py-32">
@@ -85,6 +99,18 @@ export function Projects({ items = [] }: { items?: any[] }) {
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
                   <div className="absolute right-4 top-4 flex gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                     {p.link && (
+                      <button
+                        onClick={() => {
+                          setPreviewProject(p);
+                          setPreviewDevice('desktop');
+                        }}
+                        className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background"
+                        aria-label="Preview"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                    )}
+                    {p.link && (
                       <a
                         href={p.link}
                         target="_blank"
@@ -131,6 +157,79 @@ export function Projects({ items = [] }: { items?: any[] }) {
           </AnimatePresence>
         </div>
       </div>
+
+      <AnimatePresence>
+        {previewProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 sm:p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="flex h-full w-full max-w-7xl flex-col overflow-hidden rounded-2xl glass-strong border border-white/10 shadow-2xl"
+            >
+              {/* Header with tabs and close button */}
+              <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-background/50 p-4">
+                <div className="flex items-center gap-4">
+                  <h3 className="text-lg font-semibold hidden sm:block">{previewProject.title}</h3>
+                  <a href={previewProject.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs text-cyan hover:underline">
+                    Open in new tab <ArrowUpRight className="h-3 w-3" />
+                  </a>
+                </div>
+                
+                {/* Device Tabs */}
+                <div className="flex items-center gap-2 rounded-full glass p-1">
+                  <button
+                    onClick={() => setPreviewDevice('desktop')}
+                    className={`rounded-full p-2 transition-colors ${previewDevice === 'desktop' ? 'bg-cyan text-background' : 'text-muted-foreground hover:text-foreground'}`}
+                  >
+                    <Monitor size={16} />
+                  </button>
+                  <button
+                    onClick={() => setPreviewDevice('tablet')}
+                    className={`rounded-full p-2 transition-colors ${previewDevice === 'tablet' ? 'bg-cyan text-background' : 'text-muted-foreground hover:text-foreground'}`}
+                  >
+                    <Tablet size={16} />
+                  </button>
+                  <button
+                    onClick={() => setPreviewDevice('mobile')}
+                    className={`rounded-full p-2 transition-colors ${previewDevice === 'mobile' ? 'bg-cyan text-background' : 'text-muted-foreground hover:text-foreground'}`}
+                  >
+                    <Smartphone size={16} />
+                  </button>
+                </div>
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setPreviewProject(null)}
+                  className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Iframe Container */}
+              <div className="flex-1 overflow-hidden bg-black/40 flex items-center justify-center p-2 sm:p-4">
+                <div 
+                  className={`relative h-full overflow-hidden rounded-xl border border-white/20 bg-white transition-all duration-500 ease-in-out shadow-2xl ${
+                    previewDevice === 'desktop' ? 'w-full' : previewDevice === 'tablet' ? 'w-[768px]' : 'w-[375px]'
+                  }`}
+                >
+                  <iframe 
+                    src={previewProject.link} 
+                    className="h-full w-full border-none"
+                    title={`${previewProject.title} Preview`}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
