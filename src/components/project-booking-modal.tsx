@@ -104,6 +104,7 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
       case "messenger": return "username";
       case "instagram": return "@username";
       case "email": return "you@domain.com";
+      case "in_person": return "e.g. Dhaka, Bangladesh (Optional)";
       default: return "Your contact info";
     }
   };
@@ -114,6 +115,7 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
       case "messenger": return "Messenger Username";
       case "instagram": return "Instagram Handle";
       case "email": return "Email Address";
+      case "in_person": return "Place Name";
       default: return "Contact Info";
     }
   };
@@ -158,6 +160,7 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
                 <option className="bg-[#0a0a14] text-white" value="whatsapp">WhatsApp</option>
                 <option className="bg-[#0a0a14] text-white" value="messenger">Messenger</option>
                 <option className="bg-[#0a0a14] text-white" value="instagram">Instagram</option>
+                <option className="bg-[#0a0a14] text-white" value="in_person">In Person Meet</option>
               </select>
             </div>
             <div>
@@ -191,7 +194,7 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
               ) : (
                 <input
                   name="contactValue"
-                  required
+                  required={contactMethod !== "in_person"}
                   type={contactMethod === "email" ? "email" : "text"}
                   placeholder={getContactPlaceholder()}
                   className={inputClass}

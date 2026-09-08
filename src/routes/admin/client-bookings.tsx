@@ -307,7 +307,8 @@ function ClientBookingsPage() {
                     <p className="text-gray-500 dark:text-gray-400 text-sm">Company: {selectedBooking.companyName}</p>
                   )}
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Contact: <span className="font-medium text-gray-900 dark:text-white capitalize">{selectedBooking.contactMethod}</span> ({selectedBooking.contactValue})
+                    Contact: <span className="font-medium text-gray-900 dark:text-white capitalize">{selectedBooking.contactMethod.replace(/_/g, ' ')}</span>
+                    {selectedBooking.contactValue ? ` (${selectedBooking.contactValue})` : ''}
                   </p>
                 </div>
                 <div className="flex items-center gap-1">
