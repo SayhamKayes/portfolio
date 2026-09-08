@@ -5,6 +5,7 @@ import { MagneticButton } from "./motion-primitives";
 import { showPopup } from "./CustomPopup";
 import { submitClientBooking } from "../server/admin";
 import { uploadClientFile } from "../server/upload";
+import { COUNTRY_CODES } from "../lib/country-codes";
 
 const inputClass = "w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-cyan/50 focus:bg-white/[0.05] focus:shadow-[0_0_20px_var(--glow-color)]";
 const labelClass = "mb-2 block text-xs uppercase tracking-widest text-muted-foreground";
@@ -14,6 +15,7 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contactMethod, setContactMethod] = useState("email");
   const [projectType, setProjectType] = useState("business_website");
+  const [countryCode, setCountryCode] = useState("+880");
   const [links, setLinks] = useState<string[]>([""]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
@@ -54,7 +56,7 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
         fullName: formData.get('fullName') as string,
         companyName: formData.get('companyName') as string || undefined,
         contactMethod,
-        contactValue: formData.get('contactValue') as string,
+        contactValue: contactMethod === 'whatsapp' ? `${countryCode} ${formData.get('contactValue')}` : formData.get('contactValue') as string,
         projectType,
         customProjectType: projectType === 'other' ? formData.get('customProjectType') as string : undefined,
         budget: formData.get('budget') as string,
@@ -160,13 +162,41 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
             </div>
             <div>
               <label className={labelClass}>{getContactLabel()} <span className="text-red-500">*</span></label>
-              <input
-                name="contactValue"
-                required
-                type={contactMethod === "email" ? "email" : "text"}
-                placeholder={getContactPlaceholder()}
-                className={inputClass}
-              />
+              {contactMethod === "whatsapp" ? (
+                <div className="flex w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-all focus-within:border-cyan/50 focus-within:bg-white/[0.05] focus-within:shadow-[0_0_20px_var(--glow-color)]">
+                  <div className="relative w-[30%] sm:w-[25%] shrink-0 border-r border-white/10 flex items-center bg-transparent hover:bg-white/[0.02] transition-colors">
+                    <div className="w-full px-2 sm:px-3 py-3 text-xs sm:text-sm text-foreground pointer-events-none truncate text-center">
+                      {countryCode}
+                    </div>
+                    <select
+                      value={countryCode}
+                      onChange={(e) => setCountryCode(e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    >
+                      {COUNTRY_CODES.map((c) => (
+                        <option key={c.code} className="bg-[#0a0a14] text-white" value={c.dialCode}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <input
+                    name="contactValue"
+                    required
+                    type="tel"
+                    placeholder="1XXXXXXXXX"
+                    className="flex-1 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-muted-foreground/60"
+                  />
+                </div>
+              ) : (
+                <input
+                  name="contactValue"
+                  required
+                  type={contactMethod === "email" ? "email" : "text"}
+                  placeholder={getContactPlaceholder()}
+                  className={inputClass}
+                />
+              )}
             </div>
           </div>
 
