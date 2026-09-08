@@ -159,6 +159,15 @@ function SettingsPage() {
       setAboutImageFile(null);
 
       showPopup('Settings saved successfully!');
+      
+      // Notify the frontend to reload
+      try {
+        const bc = new BroadcastChannel('portfolio_settings_channel');
+        bc.postMessage({ type: 'SETTINGS_UPDATED' });
+        bc.close();
+      } catch (err) {
+        console.error('Failed to broadcast settings update:', err);
+      }
     } catch (e) {
       showPopup('Failed to save settings', "error");
     }
