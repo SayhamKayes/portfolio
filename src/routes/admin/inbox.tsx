@@ -287,7 +287,7 @@ function InboxPage() {
         </div>
 
         {/* Chat Window */}
-        <div className={`flex-1 flex flex-col bg-white dark:bg-zinc-900 min-w-0 ${!selectedMessageId ? 'hidden md:flex' : 'flex'}`}>
+        <div className={`flex-1 flex flex-col bg-white dark:bg-zinc-900 min-w-0 min-h-0 ${!selectedMessageId ? 'hidden md:flex' : 'flex'}`}>
           {selectedMessage ? (
             <>
               {/* Header */}
