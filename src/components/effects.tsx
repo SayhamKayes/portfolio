@@ -6,17 +6,32 @@ export function CursorGlow() {
   useEffect(() => {
     const move = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
     window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
+    document.body.style.cursor = "none";
+    return () => {
+      window.removeEventListener("mousemove", move);
+      document.body.style.cursor = "auto";
+    };
   }, []);
   return (
-    <div
-      aria-hidden
-      className="pointer-events-none fixed inset-0 z-[60] hidden md:block"
-      style={{
-        background: `radial-gradient(600px circle at ${pos.x}px ${pos.y}px, oklch(0.7 0.22 250 / 0.08), transparent 40%)`,
-        transition: "background 0.1s ease-out",
-      }}
-    />
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-[60] hidden md:block"
+        style={{
+          background: `radial-gradient(600px circle at ${pos.x}px ${pos.y}px, oklch(0.7 0.22 250 / 0.08), transparent 40%)`,
+          transition: "background 0.1s ease-out",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none fixed z-[70] hidden md:block h-1.5 w-1.5 rounded-full bg-primary"
+        style={{
+          left: pos.x,
+          top: pos.y,
+          transform: "translate(-50%, -50%)",
+        }}
+      />
+    </>
   );
 }
 
