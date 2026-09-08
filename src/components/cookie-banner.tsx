@@ -40,9 +40,9 @@ export function CookieBanner({ onConsentChange }: { onConsentChange: (consent: b
           className="fixed bottom-4 left-4 right-4 z-[9990] mx-auto max-w-4xl overflow-hidden rounded-2xl glass-strong border border-white/10 p-4 shadow-2xl sm:flex sm:items-center sm:justify-between sm:p-6"
         >
           <div className="flex-1 pr-4">
-            <h3 className="mb-2 text-lg font-semibold text-foreground">We value your privacy</h3>
+            <h3 className="mb-2 text-lg font-semibold text-foreground">Your privacy is my concern</h3>
             <p className="text-sm text-muted-foreground">
-              We use local storage (cookies) to remember your selected theme and preferences. This ensures a consistent and fast experience on your next visit. 
+              Use local storage (cookies) to remember your selected theme and preferences. This ensures a consistent and fast experience on your next visit.
             </p>
           </div>
           <div className="mt-4 flex shrink-0 flex-row gap-3 sm:mt-0 sm:flex-col lg:flex-row">
