@@ -16,7 +16,7 @@ export function CursorGlow() {
     <>
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 z-[60] hidden md:block"
+        className="pointer-events-none fixed inset-0 z-[9998] hidden md:block"
         style={{
           background: `radial-gradient(600px circle at ${pos.x}px ${pos.y}px, oklch(0.7 0.22 250 / 0.08), transparent 40%)`,
           transition: "background 0.1s ease-out",
@@ -24,7 +24,7 @@ export function CursorGlow() {
       />
       <div
         aria-hidden
-        className="pointer-events-none fixed z-[70] hidden md:block h-1.5 w-1.5 rounded-full bg-primary"
+        className="pointer-events-none fixed z-[9999] hidden md:block h-1.5 w-1.5 rounded-full bg-primary"
         style={{
           left: pos.x,
           top: pos.y,
