@@ -28,7 +28,7 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
     try {
       const formElement = e.currentTarget;
       const formData = new FormData(formElement);
-      
+
       let fileUrls: string[] = [];
 
       if (selectedFiles && selectedFiles.length > 0) {
@@ -209,8 +209,8 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
           <div className="grid gap-5 sm:grid-cols-3">
             <div>
               <label className={labelClass}>Project Type</label>
-              <select 
-                name="projectType" 
+              <select
+                name="projectType"
                 className={inputClass + " appearance-none cursor-pointer"}
                 value={projectType}
                 onChange={(e) => setProjectType(e.target.value)}
@@ -228,14 +228,14 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
                 <option className="bg-[#0a0a14] text-white" value="maintenance">Maintenance / Bug Fixing</option>
                 <option className="bg-[#0a0a14] text-white" value="other">Other</option>
               </select>
-              
+
               {projectType === "other" && (
                 <div className="mt-3 animate-in fade-in slide-in-from-top-2">
-                  <input 
-                    name="customProjectType" 
-                    placeholder="Specify Project Type" 
-                    required 
-                    className={inputClass} 
+                  <input
+                    name="customProjectType"
+                    placeholder="Specify Project Type"
+                    required
+                    className={inputClass}
                   />
                 </div>
               )}
@@ -325,13 +325,13 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
                   <div className="flex flex-col sm:flex-row text-sm text-muted-foreground justify-center items-center gap-1">
                     <label className="relative cursor-pointer rounded-md font-medium text-cyan hover:text-cyan/80 focus-within:outline-none">
                       <span>Upload a file</span>
-                      <input 
-                        id="file-upload" 
-                        name="file-upload" 
-                        type="file" 
-                        className="sr-only" 
-                        multiple 
-                        accept=".zip,.jpg,.jpeg,.png,.pdf" 
+                      <input
+                        id="file-upload"
+                        name="file-upload"
+                        type="file"
+                        className="sr-only"
+                        multiple
+                        accept=".zip,.jpg,.jpeg,.png,.pdf"
                         onChange={handleFileChange}
                       />
                     </label>
@@ -359,8 +359,8 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
                         )}
                         <span className="text-sm truncate max-w-[150px] sm:max-w-[300px]">{file.name}</span>
                       </div>
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         onClick={() => removeFile(idx)}
                         className="text-muted-foreground hover:text-red-400 p-1 transition-colors"
                       >
