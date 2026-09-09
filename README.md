@@ -37,6 +37,8 @@ Showcasing skills, projects, experience, testimonials, and a custom built backen
 - 🌙 **Dark Theme** by default with carefully chosen color palettes.
 - 🤖 **AI Assistant Integration** (Coze Chat Widget).
 - 💬 **Dynamic Contact Form** with automated confirmation emails.
+- 📅 **Advanced Project Booking Form** with multiple contact methods, country codes, and file uploads.
+- 🎥 **Real-time Video Calls & Chat** directly integrated for seamless client meetings.
 - 📱 **Fully Responsive Design** tailored for all screen sizes.
 
 ### 🔐 Backend & Admin CMS
@@ -44,6 +46,8 @@ Showcasing skills, projects, experience, testimonials, and a custom built backen
 - 📊 **Real-time Dashboard** with live stats (Total Projects, Visitors, Messages).
 - 🗄️ **Complete CRUD Operations** for Projects, Skills, Experience, Education, and Testimonials.
 - ✉️ **Built-in Inbox System** to view, reply, and manage contact form submissions directly from the admin panel.
+- 📆 **Client Bookings Management** to manage complex project requests, uploaded files, and send email replies.
+- 📞 **Agora Video Call Integration** to directly start video meetings with clients from the admin panel.
 - 🚀 **Server Functions** via TanStack Start (No separate backend needed).
 
 ---
@@ -114,6 +118,10 @@ graph TD
 - **Radix UI** (Accessible Primitives)
 - **Lucide React** (Icons)
 
+### Real-Time & Communications
+- **Agora Web SDK** (Video & Audio Calls)
+- **Agora RTM / Data Channels** (Real-time P2P Chat)
+
 ### Backend, Database & Forms
 - **Prisma ORM** (Database Access)
 - **PostgreSQL** (Database - Supabase/Neon)
@@ -175,6 +183,10 @@ ADMIN_PASSWORD="securepassword123"
 # Email Configuration (Nodemailer)
 GMAIL_USER="your_email@gmail.com"
 GMAIL_APP_PASSWORD="your_gmail_app_password"
+
+# Agora Video Call Integration
+VITE_AGORA_APP_ID="your_agora_app_id"
+AGORA_APP_CERTIFICATE="your_agora_app_certificate"
 ```
 
 ### 4. Database Setup
