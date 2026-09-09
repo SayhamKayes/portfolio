@@ -515,7 +515,7 @@ function ClientBookingsPage() {
                   </form>
                 ) : (
                   <div className="text-sm text-gray-500 dark:text-gray-400 p-4 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950">
-                    This client chose <strong>{selectedBooking.contactMethod}</strong>. Please reply manually: {' '}
+                    This client chose <strong>{selectedBooking.contactMethod}</strong>. {selectedBooking.contactMethod === 'in_person' ? 'Meeting place:' : 'Please reply manually:'} {' '}
                     <a 
                       href={getContactLink(selectedBooking.contactMethod, selectedBooking.contactValue) || '#'} 
                       target="_blank" 
@@ -566,6 +566,8 @@ function ClientBookingsPage() {
               channelName={agoraChannel}
               token={agoraToken}
               uid={1}
+              userName="Sayham Kayes"
+              onNameTaken={() => {}}
               onEndCall={() => {
                 setIsCallActive(false);
                 setAgoraChannel('');
