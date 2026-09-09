@@ -289,12 +289,6 @@ function ClientBookingsPage() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-4">
             Client Bookings
-            <button 
-              onClick={testIncomingCall}
-              className="text-sm bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full font-medium flex items-center gap-2 hover:bg-blue-200 transition-colors"
-            >
-              Test Incoming Call
-            </button>
           </h1>
           <p className="text-gray-500 dark:text-gray-400">Manage project requests and send replies.</p>
         </div>
