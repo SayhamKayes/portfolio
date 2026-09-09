@@ -85,14 +85,18 @@ graph TD
     %% External Services
     Coze[Coze AI Chatbot]
     Gmail[Gmail SMTP Server]
+    Agora[Agora WebRTC & RTM]
 
     %% Connections
     Client -->|Interacts| Pages
     Client -->|Chats| Coze
+    Client <-->|Video / P2P Chat| Agora
+    Admin <-->|Video / P2P Chat| Agora
     Admin -->|Login & Manage| AdminUI
 
     Pages -->|Form Submissions| ServerFns
     AdminUI -->|CRUD Requests| Auth
+    AdminUI -->|Generate Call Token| ServerFns
     Auth -->|Verified| ServerFns
 
     ServerFns -->|Query/Mutate| Prisma
