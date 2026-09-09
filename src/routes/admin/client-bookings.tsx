@@ -1,9 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Loader2, Search, Trash2, MailOpen, Mail, ExternalLink, Link as LinkIcon, Paperclip, CheckCircle, MoreVertical, Eye, EyeOff, BellOff } from 'lucide-react';
-import { useState } from 'react';
+import { Loader2, Search, Trash2, MailOpen, Mail, ExternalLink, Link as LinkIcon, Paperclip, CheckCircle, MoreVertical, Eye, EyeOff, BellOff, Copy } from 'lucide-react';
+import { useState, lazy, Suspense } from 'react';
 import { toast } from 'sonner';
+const VideoCallProvider = lazy(() => import('../../components/VideoPlayer').then(module => ({ default: module.VideoCallProvider })));
+const VideoPlayer = lazy(() => import('../../components/VideoPlayer').then(module => ({ default: module.VideoPlayer })));
+import { IncomingCallModal } from '../../components/IncomingCallModal';
 
 import {
   DropdownMenu,
@@ -21,6 +24,7 @@ import {
   deleteClientBooking,
   replyToClientBooking
 } from '../../server/admin';
+import { generateAgoraToken } from '../../server/agora';
 
 export const Route = createFileRoute('/admin/client-bookings')({
   component: ClientBookingsPage,
@@ -52,6 +56,59 @@ function ClientBookingsPage() {
   const [search, setSearch] = useState('');
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState('');
+
+  // Agora State
+  const [isCallActive, setIsCallActive] = useState(false);
+  const [isIncomingModalOpen, setIsIncomingModalOpen] = useState(false);
+  const [agoraToken, setAgoraToken] = useState('');
+  const [agoraChannel, setAgoraChannel] = useState('');
+  const [callerName, setCallerName] = useState('');
+
+  // Helper to test incoming call
+  const testIncomingCall = () => {
+    setCallerName("Test Client");
+    setAgoraChannel("test_channel");
+    setIsIncomingModalOpen(true);
+  };
+
+  const handleCopyInviteLink = (bookingId: string) => {
+    const link = `${window.location.origin}/call/${bookingId}`;
+    navigator.clipboard.writeText(link);
+    toast.success("Invite link copied to clipboard!");
+  };
+
+  const handleAcceptCall = async () => {
+    setIsIncomingModalOpen(false);
+    
+    try {
+      const response = await generateAgoraToken({ 
+        data: { channelName: agoraChannel, uid: 0 } 
+      });
+      
+      setAgoraToken(response.token);
+      toast.success("Joined Video Call");
+      setIsCallActive(true);
+    } catch (error) {
+      toast.error("Failed to generate call token");
+      console.error(error);
+    }
+  };
+
+  const handleStartCall = async (bookingId: string) => {
+    setAgoraChannel(bookingId);
+    
+    try {
+      const response = await generateAgoraToken({ 
+        data: { channelName: bookingId, uid: 0 } 
+      });
+      
+      setAgoraToken(response.token);
+      setIsCallActive(true);
+    } catch (error) {
+      toast.error("Failed to start call");
+      console.error(error);
+    }
+  };
 
   const { data: bookings = [], isLoading } = useQuery({
     queryKey: ['clientBookings'],
@@ -230,7 +287,15 @@ function ClientBookingsPage() {
     <div className="space-y-6 h-full flex flex-col">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
         <div>
-          <h1 className="text-2xl font-bold">Client Bookings</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-4">
+            Client Bookings
+            <button 
+              onClick={testIncomingCall}
+              className="text-sm bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full font-medium flex items-center gap-2 hover:bg-blue-200 transition-colors"
+            >
+              Test Incoming Call
+            </button>
+          </h1>
           <p className="text-gray-500 dark:text-gray-400">Manage project requests and send replies.</p>
         </div>
         <div className="relative w-full sm:w-64">
@@ -310,6 +375,22 @@ function ClientBookingsPage() {
                     Contact: <span className="font-medium text-gray-900 dark:text-white capitalize">{selectedBooking.contactMethod.replace(/_/g, ' ')}</span>
                     {selectedBooking.contactValue ? ` (${selectedBooking.contactValue})` : ''}
                   </p>
+                  <div className="flex gap-2 mt-3">
+                    <button 
+                      onClick={() => handleStartCall(selectedBooking.id)}
+                      className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-md font-medium transition-colors"
+                    >
+                      Start Video Call
+                    </button>
+                    <button 
+                      onClick={() => handleCopyInviteLink(selectedBooking.id)}
+                      className="text-sm bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-gray-300 px-4 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1"
+                      title="Copy Link for Client"
+                    >
+                      <Copy className="w-4 h-4" />
+                      Copy Link
+                    </button>
+                  </div>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
@@ -466,6 +547,34 @@ function ClientBookingsPage() {
           )}
         </div>
       </div>
+
+      {/* Video Call Interfaces */}
+      <IncomingCallModal 
+        isOpen={isIncomingModalOpen}
+        callerName={callerName}
+        isVideoCall={true}
+        onAccept={handleAcceptCall}
+        onDecline={() => setIsIncomingModalOpen(false)}
+      />
+
+      {/* Video Call Modal */}
+      {isCallActive && (
+        <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 text-white"><div className="animate-spin w-8 h-8 border-4 border-blue-500 rounded-full border-t-transparent"></div></div>}>
+          <VideoCallProvider>
+            <VideoPlayer 
+              appId={import.meta.env.VITE_AGORA_APP_ID || "1a2368252b19451da438489172c82f5a"} 
+              channelName={agoraChannel}
+              token={agoraToken}
+              uid={1}
+              onEndCall={() => {
+                setIsCallActive(false);
+                setAgoraChannel('');
+                setAgoraToken('');
+              }}
+            />
+          </VideoCallProvider>
+        </Suspense>
+      )}
     </div>
   );
 }
