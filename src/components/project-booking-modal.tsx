@@ -164,7 +164,9 @@ export function ProjectBookingModal({ children }: { children: React.ReactNode })
               </select>
             </div>
             <div>
-              <label className={labelClass}>{getContactLabel()} <span className="text-red-500">*</span></label>
+              <label className={labelClass}>
+                {getContactLabel()} {contactMethod !== "in_person" && <span className="text-red-500">*</span>}
+              </label>
               {contactMethod === "whatsapp" ? (
                 <div className="flex w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-all focus-within:border-cyan/50 focus-within:bg-white/[0.05] focus-within:shadow-[0_0_20px_var(--glow-color)]">
                   <div className="relative w-[30%] sm:w-[25%] shrink-0 border-r border-white/10 flex items-center bg-transparent hover:bg-white/[0.02] transition-colors">
