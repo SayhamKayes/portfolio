@@ -14,6 +14,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as CallChannelIdRouteImport } from './routes/call/$channelId'
 import { Route as AdminTestimonialsRouteImport } from './routes/admin/testimonials'
 import { Route as AdminSkillsRouteImport } from './routes/admin/skills'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
@@ -48,6 +49,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
+} as any)
+const CallChannelIdRoute = CallChannelIdRouteImport.update({
+  id: '/call/$channelId',
+  path: '/call/$channelId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminTestimonialsRoute = AdminTestimonialsRouteImport.update({
   id: '/testimonials',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/skills': typeof AdminSkillsRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
+  '/call/$channelId': typeof CallChannelIdRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/skills': typeof AdminSkillsRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
+  '/call/$channelId': typeof CallChannelIdRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/skills': typeof AdminSkillsRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
+  '/call/$channelId': typeof CallChannelIdRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/skills'
     | '/admin/testimonials'
+    | '/call/$channelId'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/skills'
     | '/admin/testimonials'
+    | '/call/$channelId'
     | '/admin'
   id:
     | '__root__'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/skills'
     | '/admin/testimonials'
+    | '/call/$channelId'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -198,6 +210,7 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  CallChannelIdRoute: typeof CallChannelIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -236,6 +249,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/call/$channelId': {
+      id: '/call/$channelId'
+      path: '/call/$channelId'
+      fullPath: '/call/$channelId'
+      preLoaderRoute: typeof CallChannelIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/testimonials': {
       id: '/admin/testimonials'
@@ -338,6 +358,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  CallChannelIdRoute: CallChannelIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
