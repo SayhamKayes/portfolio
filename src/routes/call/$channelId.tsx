@@ -16,8 +16,23 @@ function CallPage() {
   const [hasJoined, setHasJoined] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [uid, setUid] = useState(0);
+  const [userName, setUserName] = useState('');
+  const [nameError, setNameError] = useState<string | null>(null);
 
-  const joinCall = async () => {
+  const joinCall = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!userName.trim()) {
+      setNameError("Please enter your name to join.");
+      return;
+    }
+    
+    const lowerName = userName.trim().toLowerCase();
+    if (lowerName === "sayham kayes" || lowerName === "sayham") {
+      setNameError("This name is reserved for the host. Please use another name.");
+      return;
+    }
+
+    setNameError(null);
     setIsLoading(true);
     try {
       // In a real app, you might want to ask for a guest name here
@@ -37,6 +52,12 @@ function CallPage() {
     }
   };
 
+  const handleNameTaken = () => {
+    setHasJoined(false);
+    setAgoraToken('');
+    setNameError("This name is already taken by someone in the meeting. Please choose a different name.");
+  };
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
       {!hasJoined ? (
@@ -49,16 +70,35 @@ function CallPage() {
             </div>
           </div>
           <h1 className="text-2xl font-bold mb-2">Video Consultation</h1>
-          <p className="text-gray-400 mb-8">You have been invited to a video call. Click below to join.</p>
+          <p className="text-gray-400 mb-8">You have been invited to a video call.</p>
           
-          <button
-            onClick={joinCall}
-            disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
-          >
-            {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : null}
-            Join Call Now
-          </button>
+          <form onSubmit={joinCall} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1 text-left">
+              <label htmlFor="guestName" className="text-sm font-medium text-gray-300">Your Name</label>
+              <input
+                id="guestName"
+                type="text"
+                value={userName}
+                onChange={(e) => {
+                  setUserName(e.target.value);
+                  if (nameError) setNameError(null);
+                }}
+                placeholder="e.g. John Doe"
+                className={`bg-gray-800 border ${nameError ? 'border-red-500' : 'border-gray-700'} rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                required
+              />
+              {nameError && <p className="text-red-500 text-sm mt-1">{nameError}</p>}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading || !userName.trim()}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50 mt-2"
+            >
+              {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : null}
+              Join Call Now
+            </button>
+          </form>
         </div>
       ) : (
         <Suspense fallback={<div className="text-white flex flex-col items-center"><Loader2 className="animate-spin w-8 h-8 mb-2" />Loading Call Environment...</div>}>
@@ -68,6 +108,8 @@ function CallPage() {
               channelName={channelId}
               token={agoraToken}
               uid={uid}
+              userName={userName}
+              onNameTaken={handleNameTaken}
               onEndCall={() => window.location.href = "/"} // Redirect to home on end
             />
           </VideoCallProvider>
