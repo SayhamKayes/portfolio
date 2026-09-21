@@ -97,45 +97,47 @@ export function Projects({ items = [] }: { items?: any[] }) {
                     className="h-full w-full object-cover transition-transform duration-[1.2s] group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-                  <div className="absolute right-4 top-4 flex gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    {p.link && (
-                      <button
-                        onClick={() => {
-                          setPreviewProject(p);
-                          setPreviewDevice('desktop');
-                        }}
-                        className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background"
-                        aria-label="Preview"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </button>
-                    )}
-                    {p.link && (
-                      <a
-                        href={p.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background"
-                        aria-label="Live demo"
-                      >
-                        <ArrowUpRight className="h-4 w-4" />
-                      </a>
-                    )}
-                    {p.githubLink && (
-                      <a
-                        href={p.githubLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background"
-                        aria-label="GitHub"
-                      >
-                        <Github className="h-4 w-4" />
-                      </a>
-                    )}
-                  </div>
                 </div>
                 <div className="p-7">
-                  <h3 className="text-2xl font-semibold tracking-tight">{p.title}</h3>
+                  <div className="flex items-center justify-between gap-4">
+                    <h3 className="text-2xl font-semibold tracking-tight">{p.title}</h3>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {p.link && (
+                        <button
+                          onClick={() => {
+                            setPreviewProject(p);
+                            setPreviewDevice('desktop');
+                          }}
+                          className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background transition-colors"
+                          aria-label="Preview"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      )}
+                      {p.link && (
+                        <a
+                          href={p.link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background transition-colors"
+                          aria-label="Live demo"
+                        >
+                          <ArrowUpRight className="h-4 w-4" />
+                        </a>
+                      )}
+                      {p.githubLink && (
+                        <a
+                          href={p.githubLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background transition-colors"
+                          aria-label="GitHub"
+                        >
+                          <Github className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
                   <p className="mt-3 text-sm text-muted-foreground">{p.desc}</p>
                   <div className="mt-5 flex flex-wrap gap-2">
                     {p.tags.map((t: string) => (
