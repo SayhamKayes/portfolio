@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Github, Eye, Monitor, Tablet, Smartphone, X } from "lucide-react";
+import { ArrowUpRight, Github, Eye, Monitor, Tablet, Smartphone, X, RotateCw } from "lucide-react";
 import { FadeUp } from "./motion-primitives";
 import p1 from "@/assets/projects_preview/projects_preview_1.jpg";
 import p2 from "@/assets/projects_preview/projects_preview_2.jpg";
@@ -9,8 +9,6 @@ import p4 from "@/assets/projects_preview/projects_preview_4.jpg";
 import p5 from "@/assets/projects_preview/projects_preview_5.jpg";
 
 type Cat = string;
-
-
 
 export function Projects({ items = [] }: { items?: any[] }) {
   const dbItems = items.map((p, i) => ({
@@ -30,15 +28,59 @@ export function Projects({ items = [] }: { items?: any[] }) {
 
   const [previewProject, setPreviewProject] = useState<any>(null);
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [isModalReady, setIsModalReady] = useState(false);
+  const [isIframeLoading, setIsIframeLoading] = useState(true);
+  const [iframeKey, setIframeKey] = useState(0);
+
+  // 1. Hover preconnect / DNS-prefetch
+  const preconnectUrl = (url?: string) => {
+    if (!url) return;
+    try {
+      const origin = new URL(url).origin;
+      if (!document.querySelector(`link[rel="preconnect"][href="${origin}"]`)) {
+        const linkPreconnect = document.createElement("link");
+        linkPreconnect.rel = "preconnect";
+        linkPreconnect.href = origin;
+        document.head.appendChild(linkPreconnect);
+
+        const linkDns = document.createElement("link");
+        linkDns.rel = "dns-prefetch";
+        linkDns.href = origin;
+        document.head.appendChild(linkDns);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const openPreview = (p: any) => {
+    setPreviewProject(p);
+    setPreviewDevice('desktop');
+    setIsModalReady(false);
+    setIsIframeLoading(true);
+    setIframeKey((k) => k + 1);
+  };
+
+  const closePreview = () => {
+    setPreviewProject(null);
+    setIsModalReady(false);
+    setIsIframeLoading(true);
+  };
 
   useEffect(() => {
     if (previewProject) {
       document.body.style.overflow = "hidden";
+      document.body.classList.add("modal-open");
+      const timer = setTimeout(() => setIsModalReady(true), 200);
+      return () => clearTimeout(timer);
     } else {
       document.body.style.overflow = "unset";
+      document.body.classList.remove("modal-open");
+      setIsModalReady(false);
     }
     return () => {
       document.body.style.overflow = "unset";
+      document.body.classList.remove("modal-open");
     };
   }, [previewProject]);
 
@@ -85,6 +127,7 @@ export function Projects({ items = [] }: { items?: any[] }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5, delay: i * 0.05 }}
+                onMouseEnter={() => preconnectUrl(p.link)}
                 className="group relative overflow-hidden rounded-3xl glass-strong"
               >
                 <div className="relative aspect-[16/10] overflow-hidden">
@@ -104,10 +147,8 @@ export function Projects({ items = [] }: { items?: any[] }) {
                     <div className="flex items-center gap-2 shrink-0">
                       {p.link && (
                         <button
-                          onClick={() => {
-                            setPreviewProject(p);
-                            setPreviewDevice('desktop');
-                          }}
+                          onClick={() => openPreview(p)}
+                          onMouseEnter={() => preconnectUrl(p.link)}
                           className="grid h-10 w-10 place-items-center rounded-full glass-strong text-foreground hover:bg-cyan hover:text-background transition-colors"
                           aria-label="Preview"
                         >
@@ -166,16 +207,22 @@ export function Projects({ items = [] }: { items?: any[] }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 sm:p-6"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 sm:p-6"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="flex h-full w-full max-w-7xl flex-col overflow-hidden rounded-2xl glass-strong border border-white/10 shadow-2xl"
+              transition={{ duration: 0.2 }}
+              onAnimationComplete={() => setIsModalReady(true)}
+              className="flex h-full w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-[#091011] border border-white/15 shadow-2xl"
+              style={{
+                transform: "translateZ(0)",
+                WebkitTransform: "translateZ(0)",
+              }}
             >
               {/* Header with tabs and close button */}
-              <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-background/50 p-4">
+              <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-black/40 p-4">
                 <div className="flex items-center gap-4">
                   <h3 className="text-lg font-semibold hidden sm:block">{previewProject.title}</h3>
                   <a href={previewProject.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs text-cyan hover:underline">
@@ -183,49 +230,107 @@ export function Projects({ items = [] }: { items?: any[] }) {
                   </a>
                 </div>
                 
-                {/* Device Tabs */}
-                <div className="flex items-center gap-2 rounded-full glass p-1">
+                {/* Device Tabs & Reload */}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 sm:gap-2 rounded-full glass p-1">
+                    <button
+                      onClick={() => setPreviewDevice('desktop')}
+                      className={`rounded-full p-2 transition-colors ${previewDevice === 'desktop' ? 'bg-cyan text-background' : 'text-muted-foreground hover:text-foreground'}`}
+                      title="Desktop view"
+                      aria-label="Desktop view"
+                    >
+                      <Monitor size={16} />
+                    </button>
+                    <button
+                      onClick={() => setPreviewDevice('tablet')}
+                      className={`rounded-full p-2 transition-colors ${previewDevice === 'tablet' ? 'bg-cyan text-background' : 'text-muted-foreground hover:text-foreground'}`}
+                      title="Tablet view"
+                      aria-label="Tablet view"
+                    >
+                      <Tablet size={16} />
+                    </button>
+                    <button
+                      onClick={() => setPreviewDevice('mobile')}
+                      className={`rounded-full p-2 transition-colors ${previewDevice === 'mobile' ? 'bg-cyan text-background' : 'text-muted-foreground hover:text-foreground'}`}
+                      title="Mobile view"
+                      aria-label="Mobile view"
+                    >
+                      <Smartphone size={16} />
+                    </button>
+                  </div>
+
                   <button
-                    onClick={() => setPreviewDevice('desktop')}
-                    className={`rounded-full p-2 transition-colors ${previewDevice === 'desktop' ? 'bg-cyan text-background' : 'text-muted-foreground hover:text-foreground'}`}
+                    onClick={() => {
+                      setIsIframeLoading(true);
+                      setIframeKey((k) => k + 1);
+                    }}
+                    className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+                    title="Reload preview"
+                    aria-label="Reload preview"
                   >
-                    <Monitor size={16} />
-                  </button>
-                  <button
-                    onClick={() => setPreviewDevice('tablet')}
-                    className={`rounded-full p-2 transition-colors ${previewDevice === 'tablet' ? 'bg-cyan text-background' : 'text-muted-foreground hover:text-foreground'}`}
-                  >
-                    <Tablet size={16} />
-                  </button>
-                  <button
-                    onClick={() => setPreviewDevice('mobile')}
-                    className={`rounded-full p-2 transition-colors ${previewDevice === 'mobile' ? 'bg-cyan text-background' : 'text-muted-foreground hover:text-foreground'}`}
-                  >
-                    <Smartphone size={16} />
+                    <RotateCw size={16} />
                   </button>
                 </div>
 
                 {/* Close Button */}
                 <button
-                  onClick={() => setPreviewProject(null)}
+                  onClick={closePreview}
                   className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+                  aria-label="Close preview"
                 >
                   <X size={20} />
                 </button>
               </div>
 
               {/* Iframe Container */}
-              <div className="flex-1 overflow-hidden bg-black/40 flex items-center justify-center p-2 sm:p-4">
+              <div className="flex-1 overflow-hidden bg-black/60 flex items-center justify-center p-2 sm:p-4 relative">
                 <div 
-                  className={`relative h-full overflow-hidden rounded-xl border border-white/20 bg-white transition-all duration-500 ease-in-out shadow-2xl ${
-                    previewDevice === 'desktop' ? 'w-full' : previewDevice === 'tablet' ? 'w-[768px]' : 'w-[375px]'
+                  className={`relative h-full overflow-hidden rounded-xl border border-white/20 bg-background shadow-2xl transition-[width,max-width] duration-300 ease-out will-change-[width] ${
+                    previewDevice === 'desktop' ? 'w-full max-w-full' : previewDevice === 'tablet' ? 'w-[768px] max-w-full' : 'w-[375px] max-w-full'
                   }`}
+                  style={{
+                    contain: "strict",
+                    transform: "translateZ(0)",
+                    WebkitTransform: "translateZ(0)",
+                  }}
                 >
-                  <iframe 
-                    src={previewProject.link} 
-                    className="h-full w-full border-none"
-                    title={`${previewProject.title} Preview`}
-                  />
+                  {/* Sleek Loading Indicator */}
+                  {(!isModalReady || isIframeLoading) && (
+                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-background/95 p-4 text-center">
+                      <div className="h-10 w-10 rounded-full border-2 border-cyan/20 border-t-cyan animate-spin" />
+                      <p className="text-sm font-medium text-muted-foreground animate-pulse">
+                        Loading live preview...
+                      </p>
+                      <a 
+                        href={previewProject.link} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="mt-2 text-xs text-cyan hover:underline flex items-center gap-1 opacity-80 hover:opacity-100 transition-opacity"
+                      >
+                        Taking longer than usual? Open in new tab <ArrowUpRight className="h-3 w-3" />
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Lazy-mounted & Hardware-Accelerated Iframe */}
+                  {isModalReady && (
+                    <iframe 
+                      key={`${previewProject.link}-${iframeKey}`}
+                      src={previewProject.link} 
+                      loading="eager"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      onLoad={() => setIsIframeLoading(false)}
+                      style={{
+                        transform: "translateZ(0)",
+                        WebkitTransform: "translateZ(0)",
+                      }}
+                      className={`h-full w-full border-none transition-opacity duration-300 ${
+                        isIframeLoading ? 'opacity-0' : 'opacity-100'
+                      }`}
+                      title={`${previewProject.title} Preview`}
+                    />
+                  )}
                 </div>
               </div>
             </motion.div>

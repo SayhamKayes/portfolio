@@ -3,15 +3,46 @@ import { motion, useScroll, useSpring } from "framer-motion";
 
 export function CursorGlow() {
   const [pos, setPos] = useState({ x: -200, y: -200 });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   useEffect(() => {
-    const move = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
-    window.addEventListener("mousemove", move);
+    let animFrame: number;
+    const move = (e: MouseEvent) => {
+      if (document.body.classList.contains("modal-open")) {
+        return;
+      }
+      cancelAnimationFrame(animFrame);
+      animFrame = requestAnimationFrame(() => {
+        setPos({ x: e.clientX, y: e.clientY });
+      });
+    };
+
+    const checkModal = () => {
+      const open = document.body.classList.contains("modal-open");
+      setIsModalOpen(open);
+      if (open) {
+        document.body.style.cursor = "auto";
+      } else {
+        document.body.style.cursor = "none";
+      }
+    };
+
+    const observer = new MutationObserver(checkModal);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+
+    window.addEventListener("mousemove", move, { passive: true });
     document.body.style.cursor = "none";
+
     return () => {
       window.removeEventListener("mousemove", move);
+      cancelAnimationFrame(animFrame);
+      observer.disconnect();
       document.body.style.cursor = "auto";
     };
   }, []);
+
+  if (isModalOpen) return null;
+
   return (
     <>
       <div
@@ -19,7 +50,6 @@ export function CursorGlow() {
         className="pointer-events-none fixed inset-0 z-[9998] hidden md:block"
         style={{
           background: `radial-gradient(600px circle at ${pos.x}px ${pos.y}px, oklch(0.7 0.22 250 / 0.08), transparent 40%)`,
-          transition: "background 0.1s ease-out",
         }}
       />
       <div
@@ -28,7 +58,8 @@ export function CursorGlow() {
         style={{
           left: pos.x,
           top: pos.y,
-          transform: "translate(-50%, -50%)",
+          transform: "translate3d(-50%, -50%, 0)",
+          willChange: "transform, left, top",
         }}
       />
     </>
