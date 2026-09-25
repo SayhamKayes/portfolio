@@ -225,7 +225,7 @@ function Index() {
 
   return (
     <div
-      className="relative min-h-screen w-full overflow-x-hidden bg-background text-foreground"
+      className="relative min-h-screen w-full overflow-x-clip bg-background text-foreground"
       style={customStyles as React.CSSProperties}
     >
       <style>{dynamicStyles}</style>
@@ -233,7 +233,7 @@ function Index() {
       <CursorGlow />
       <Navbar />
 
-      <main className="w-full overflow-x-hidden">
+      <main className="w-full overflow-x-clip">
         <Hero settings={settings} />
         <About settings={settings} globalClients={globalClients} />
         <Skills items={skills} />
